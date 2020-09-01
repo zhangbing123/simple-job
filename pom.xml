@@ -11,6 +11,7 @@
     <groupId>com.schedule</groupId>
     <artifactId>simple-job</artifactId>
     <version>1.0.0</version>
+    <packaging>jar</packaging>
     <name>simple-job</name>
     <description>Demo project for Spring Boot</description>
 
