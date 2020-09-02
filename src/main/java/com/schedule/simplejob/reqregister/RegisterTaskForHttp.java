@@ -26,8 +26,7 @@ public class RegisterTaskForHttp extends RegisterTask {
     public Runnable createTask() {
         SimpleAssert.notEmptyString(url, "the url is null");
         SimpleAssert.notEmptyString(httpMethod, "the httpMethod is null");
-        if (isPeriod)
-            SimpleAssert.notTrue(periodT <= 0, "If it is a periodic task, period cannot be less than 0");
+        super.check();
 
         return () -> RestTemplate.handleReq(this);
     }

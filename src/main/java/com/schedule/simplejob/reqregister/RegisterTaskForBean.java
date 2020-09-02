@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -30,9 +31,8 @@ public class RegisterTaskForBean extends RegisterTask {
 
         SimpleAssert.notEmptyString(beanName, "the beanName is null");
         SimpleAssert.notEmptyString(methodName, "the methodName is null");
-        if (isPeriod)
-            SimpleAssert.notTrue(periodT <= 0, "If it is a periodic task, period cannot be less than 0");
 
+        super.check();
 
         Object bean = SpringApplicationContextUtil.getBean(beanName);
 

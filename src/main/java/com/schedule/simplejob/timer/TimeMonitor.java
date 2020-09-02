@@ -64,18 +64,21 @@ public class TimeMonitor {
 
             synchronized (queue) {
 
-                if (queue.isEmpty()) {
+                if (queue.isEmpty()) {//队列为空
                     try {
                         queue.wait();
                     } catch (InterruptedException e) {
+
                     }
                 }
 
                 long time = queue.getTime();
 
+                if (time < 0) continue;
+
                 long currentTimeMillis = System.currentTimeMillis();
                 if (currentTimeMillis >= time) {
-                    executor.runTask(queue.getTaskAndRmv());
+                    queue.addQueues(time, executor.runTask(queue.getTaskAndRmv()));
                 } else {
                     //未到触发事件  线程等待
                     try {

@@ -21,7 +21,9 @@ public class SimpleJobTest {
         simpleJob.start();
         simpleJob.registerAtTime(date.getTime(), new RunTask("线程0"));
 //        simpleJob.registerAtFixedRate(1000, 2000, new RunTask("线程1"));
-        simpleJob.registerWithFixedDelay(1000,2000, new RunTask("线程2"));
+//        simpleJob.registerWithFixedDelay(1000, 2000, new RunTask("线程2"));
+
+        simpleJob.registerByCron("*/1 * * * * ?", new RunTask2("线程3"), null);
 
 
 //        Thread.currentThread().sleep(1000);
@@ -78,6 +80,21 @@ public class SimpleJobTest {
             }
             System.out.println(1 / 0);
             System.out.println(threadName + "任务执行结束....");
+//            System.out.println(threadName + "到时间了，触发事件...");
+        }
+    }
+
+    static class RunTask2 implements Runnable {
+
+        private String threadName;
+
+        public RunTask2(String threadName) {
+            this.threadName = threadName;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(threadName + "任务执行....");
 //            System.out.println(threadName + "到时间了，触发事件...");
         }
     }

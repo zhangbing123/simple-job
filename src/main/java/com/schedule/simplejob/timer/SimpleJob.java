@@ -3,6 +3,9 @@ package com.schedule.simplejob.timer;
 import com.schedule.simplejob.exchandler.TaskExceptionHandler;
 import com.schedule.simplejob.queue.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.support.CronSequenceGenerator;
+
+import java.util.Date;
 
 /**
  * @description:
@@ -17,76 +20,156 @@ public class SimpleJob {
     private TimeMonitor monitor;
 
     public SimpleJob() {
-
         this.queue = new TaskQueue();
         monitor = new TimeMonitor(queue);
     }
 
+    /**
+     * 在指定的时间执行
+     *
+     * @param time     ms    执行的时间点
+     * @param runnable 执行任务
+     */
+    public String registerAtTime(long time, Runnable runnable) {
+
+        if (runnable instanceof TimeRunTask) {
+            return register(time, (TimeRunTask) runnable);
+        } else {
+            return register(time, new TimeRunTask(this, runnable, -1));
+        }
+    }
 
     /**
      * 在指定的时间执行
      *
      * @param time     执行的时间点
      * @param runnable 执行任务
+     * @return taskId  任务id
      */
-    public void registerAtTime(long time, Runnable runnable) {
+    public String register(long time, TimeRunTask runnable) {
+
+        if (time < 0) throw new RuntimeException("the time is null");
 
         synchronized (queue) {
 
             queue.addQueue(time, runnable);
 
             queue.notify();
+
+            log.info("task registration successful");
+            return runnable.getTaskId();
+        }
+    }
+
+
+    /**
+     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
+     *
+     * @param time     单位：ms 多少ms之后执行
+     * @param period   单位：ms
+     * @param runnable
+     */
+    public String registerWithFixedDelay(long time, long period, Runnable runnable) {
+
+        return registerWithFixedDelay(time, period, runnable, null);
+    }
+
+    /**
+     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
+     *
+     * @param time     单位：ms 多少ms之后执行
+     * @param period   单位：ms 多少ms执行一次
+     * @param runnable
+     */
+    public String registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        if (runnable instanceof TimeRunTask) {
+            return register(time, (TimeRunTask) runnable);
+        } else {
+            return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, exceptionHandler));
+        }
+    }
+
+    /**
+     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
+     *
+     * @param time     单位：s 多少s之后执行
+     * @param period   单位：s 多少s执行一次
+     * @param runnable
+     */
+    public String registerWithFixedDelay(int time, int period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+
+        return registerWithFixedDelay(time * 1000L, period * 1000L, runnable, exceptionHandler);
+    }
+
+
+    /**
+     * 间隔重复执行 任务执行开始时计时 period时间后再次执行
+     *
+     * @param time     单位：ms 多少ms之后执行
+     * @param period   单位：ms 多少ms执行一次
+     * @param runnable
+     */
+    public String registerAtFixedRate(long time, long period, Runnable runnable) {
+        return registerAtFixedRate(time, period, runnable, null);
+    }
+
+    /**
+     * 间隔重复执行 任务执行开始时计时 period时间后再次执行
+     *
+     * @param time     单位：ms 多少ms之后执行
+     * @param period   单位：ms 多少ms执行一次
+     * @param runnable
+     */
+    public String registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        if (runnable instanceof TimeRunTask) {
+            return register(time, (TimeRunTask) runnable);
+        } else {
+            return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, false, exceptionHandler));
         }
 
-        log.info("task registration successful");
-    }
-
-
-    /**
-     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
-     *
-     * @param time     单位：ms
-     * @param period   单位：ms
-     * @param runnable
-     */
-    public void registerWithFixedDelay(long time, long period, Runnable runnable) {
-
-        registerWithFixedDelay(time, period, runnable, null);
-    }
-
-    /**
-     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
-     *
-     * @param time     单位：ms
-     * @param period   单位：ms
-     * @param runnable
-     */
-    public void registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-
-        registerAtTime(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, exceptionHandler));
-    }
-
-
-    /**
-     * 间隔重复执行 任务执行开始时计时 period时间后再次执行
-     *
-     * @param time     单位：ms
-     * @param period   单位：ms
-     * @param runnable
-     */
-    public void registerAtFixedRate(long time, long period, Runnable runnable) {
-        registerAtFixedRate(time, period, runnable, null);
     }
 
     /**
      * 间隔重复执行 任务执行开始时计时 period时间后再次执行
      *
-     * @param time     单位：ms
-     * @param period   单位：ms
+     * @param time     单位：s 多少s之后执行
+     * @param period   单位：s 多少s执行一次
      * @param runnable
      */
-    public void registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-        registerAtTime(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, false, exceptionHandler));
+    public String registerAtFixedRate(int time, int period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        return registerAtFixedRate(time * 1000L, period * 1000L, runnable, exceptionHandler);
+    }
+
+
+    /**
+     * 支持cron表达式
+     *
+     * @param cron
+     * @param runnable
+     * @param exceptionHandler
+     * @return
+     */
+    public String registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        try {
+
+            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
+            Date next = cronSequenceGenerator.next(new Date());
+            return register(next.getTime(), new TimeRunTask(this, runnable, cronSequenceGenerator, exceptionHandler));
+
+        } catch (Exception e) {
+            throw new RuntimeException("the cron expression format error, please check");
+        }
+    }
+
+    public String registerByCron(String cron, Runnable runnable) {
+        try {
+            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
+            Date next = cronSequenceGenerator.next(new Date());
+            return register(next.getTime(), new TimeRunTask(this, runnable, cronSequenceGenerator, null));
+
+        } catch (Exception e) {
+            throw new RuntimeException("the cron expression format error, please check");
+        }
     }
 
 

@@ -1,5 +1,8 @@
 package com.schedule.simplejob.queue;
 
+import com.schedule.simplejob.timer.TimeRunTask;
+import org.springframework.util.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -11,15 +14,27 @@ import java.util.TreeMap;
  **/
 public class TaskQueue {
 
-    private TreeMap<Long, List<Runnable>> taskQueue = new TreeMap();
+    private TreeMap<Long, List<TimeRunTask>> taskQueue = new TreeMap();
 
-    public void addQueue(Long time, Runnable runnable) {
-        List<Runnable> runnables = taskQueue.get(time);
+    public void addQueue(Long time, TimeRunTask runnable) {
+        List<TimeRunTask> runnables = taskQueue.get(time);
         if (runnables != null) {
             runnables.add(runnable);
         } else {
             runnables = new ArrayList<>();
             runnables.add(runnable);
+            taskQueue.put(time, runnables);
+        }
+    }
+
+    public void addQueues(Long time, List<TimeRunTask> runnables) {
+        if (CollectionUtils.isEmpty(runnables)) {
+            return;
+        }
+        List<TimeRunTask> oldRunnables = taskQueue.get(time);
+        if (!CollectionUtils.isEmpty(oldRunnables)) {
+            runnables.addAll(runnables);
+        } else {
             taskQueue.put(time, runnables);
         }
     }
@@ -33,9 +48,9 @@ public class TaskQueue {
 
     }
 
-    public List<Runnable> getTaskAndRmv() {
+    public List<TimeRunTask> getTaskAndRmv() {
         long time = getTime();
-        List<Runnable> runnables = taskQueue.get(time);
+        List<TimeRunTask> runnables = taskQueue.get(time);
         taskQueue.remove(time);
         return runnables;
     }
