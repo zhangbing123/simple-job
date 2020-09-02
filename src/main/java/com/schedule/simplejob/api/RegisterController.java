@@ -1,7 +1,9 @@
 package com.schedule.simplejob.api;
 
 import com.schedule.simplejob.exchandler.StopTaskExceptionHandler;
+import com.schedule.simplejob.reqregister.RegisterTask;
 import com.schedule.simplejob.reqregister.RegisterTaskForBean;
+import com.schedule.simplejob.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.timer.SimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,9 +24,9 @@ public class RegisterController {
     private SimpleJob simpleJob;
 
     @PostMapping("/httpTask")
-    public String httpTask(String url, String requestType, String contentType, String param) {
-
-        return "s";
+    public String httpTask(@RequestBody RegisterTaskForHttp registerTask) {
+        registerTask(registerTask, registerTask.createTask());
+        return "SUCCESSFUL";
     }
 
     /**
@@ -33,14 +35,17 @@ public class RegisterController {
      * @param registerTask
      */
     @PostMapping("/beanTask")
-    public void httpTask(@RequestBody RegisterTaskForBean registerTask) {
+    public String httpTask(@RequestBody RegisterTaskForBean registerTask) {
+        registerTask(registerTask, registerTask.createTask());
+        return "SUCCESSFUL";
+    }
 
-        Runnable task = registerTask.createTask();
+    private void registerTask(RegisterTask registerTask, Runnable task) {
         if (registerTask.isPeriod()) {
+            //周期任务
             simpleJob.registerWithFixedDelay(registerTask.getTime(), registerTask.getPeriodT(), task, new StopTaskExceptionHandler());
         } else {
             simpleJob.registerAtTime(registerTask.getTime(), task);
         }
-
     }
 }

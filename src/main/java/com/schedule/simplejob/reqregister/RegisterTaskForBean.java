@@ -18,19 +18,12 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class RegisterTaskForBean {
+public class RegisterTaskForBean extends RegisterTask {
 
     private String beanName;
 
     private String methodName;
 
-    private boolean isPeriod;
-
-    private long time;
-
-    private long periodT;
-
-    private String args;
 
     public Runnable createTask() {
 
