@@ -18,7 +18,7 @@ public class TaskExecutor extends ThreadPoolExecutor {
     }
 
     public TaskExecutor() {
-        this(10, 60, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>());
+        this(10, 60, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(100));
     }
 
     public void runTask(List<Runnable> taskAndRmv) {

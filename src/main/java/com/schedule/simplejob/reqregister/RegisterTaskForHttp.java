@@ -22,6 +22,7 @@ public class RegisterTaskForHttp extends RegisterTask {
     //显示此HTTP请求提交的内容类型。一般只有post提交时才需要设置该属性。 application/x-www-form-urlencoded,application/x-www-form-urlencoded
 //    private String contentType;
 
+    @Override
     public Runnable createTask() {
         SimpleAssert.notEmptyString(url, "the url is null");
         SimpleAssert.notEmptyString(httpMethod, "the httpMethod is null");

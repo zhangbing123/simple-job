@@ -25,6 +25,7 @@ public class RegisterTaskForBean extends RegisterTask {
     private String methodName;
 
 
+    @Override
     public Runnable createTask() {
 
         SimpleAssert.notEmptyString(beanName, "the beanName is null");

@@ -18,8 +18,6 @@ import java.util.Objects;
 public class RestTemplate {
 
 
-    private static final int SUCCESSFUL = 200;
-
     /**
      * http调用
      *
