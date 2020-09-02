@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  **/
 
 @Component
-public class SpringContextUtil implements ApplicationContextAware {
+public class SpringApplicationContextUtil implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 
@@ -21,7 +21,7 @@ public class SpringContextUtil implements ApplicationContextAware {
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        SpringContextUtil.applicationContext = applicationContext;
+        SpringApplicationContextUtil.applicationContext = applicationContext;
     }
 
     /**

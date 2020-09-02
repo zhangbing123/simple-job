@@ -1,11 +1,10 @@
 package com.schedule.simplejob.reqregister;
 
-import com.schedule.simplejob.config.SpringContextUtil;
+import com.schedule.simplejob.config.SpringApplicationContextUtil;
 import com.schedule.simplejob.utils.SimpleAssert;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
@@ -41,7 +40,7 @@ public class RegisterTaskForBean {
             SimpleAssert.notTrue(periodT <= 0, "If it is a periodic task, period cannot be less than 0");
 
 
-        Object bean = SpringContextUtil.getBean(beanName);
+        Object bean = SpringApplicationContextUtil.getBean(beanName);
 
         if (Objects.isNull(bean)) {
             throw new RuntimeException("not found the bean by beanName");
