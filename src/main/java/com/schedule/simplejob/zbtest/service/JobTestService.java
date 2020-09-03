@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class JobTestService {
 
     public void test1() {
+        System.out.println(1 / 0);
         log.info("test1方法已执行。。。");
     }
 

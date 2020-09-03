@@ -1,4 +1,4 @@
-package com.schedule.simplejob.reqregister;
+package com.schedule.simplejob.model.reqregister;
 
 import com.schedule.simplejob.config.SpringApplicationContextUtil;
 import com.schedule.simplejob.utils.SimpleAssert;
@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Objects;

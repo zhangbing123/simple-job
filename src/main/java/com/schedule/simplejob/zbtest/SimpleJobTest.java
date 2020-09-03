@@ -23,7 +23,7 @@ public class SimpleJobTest {
 //        simpleJob.registerAtFixedRate(1000, 2000, new RunTask("线程1"));
 //        simpleJob.registerWithFixedDelay(1000, 2000, new RunTask("线程2"));
 
-        simpleJob.registerByCron("*/1 * * * * ?", new RunTask2("线程3"), null);
+//        simpleJob.registerByCron("*/1 * * * * ?", new RunTask2("线程3"), null);
 
 
 //        Thread.currentThread().sleep(1000);

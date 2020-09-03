@@ -30,13 +30,8 @@ public class SimpleJob {
      * @param time     ms    执行的时间点
      * @param runnable 执行任务
      */
-    public String registerAtTime(long time, Runnable runnable) {
-
-        if (runnable instanceof TimeRunTask) {
-            return register(time, (TimeRunTask) runnable);
-        } else {
-            return register(time, new TimeRunTask(this, runnable, -1));
-        }
+    public TimeRunTask registerAtTime(long time, Runnable runnable) {
+        return register(time, new TimeRunTask(this, runnable, -1));
     }
 
     /**
@@ -44,11 +39,13 @@ public class SimpleJob {
      *
      * @param time     执行的时间点
      * @param runnable 执行任务
-     * @return taskId  任务id
+     * @return TimeRunTask  任务
      */
-    public String register(long time, TimeRunTask runnable) {
+    public TimeRunTask register(long time, TimeRunTask runnable) {
 
         if (time < 0) throw new RuntimeException("the time is null");
+
+        runnable.check();
 
         synchronized (queue) {
 
@@ -57,7 +54,7 @@ public class SimpleJob {
             queue.notify();
 
             log.info("task registration successful");
-            return runnable.getTaskId();
+            return runnable;
         }
     }
 
@@ -69,7 +66,7 @@ public class SimpleJob {
      * @param period   单位：ms
      * @param runnable
      */
-    public String registerWithFixedDelay(long time, long period, Runnable runnable) {
+    public TimeRunTask registerWithFixedDelay(long time, long period, Runnable runnable) {
 
         return registerWithFixedDelay(time, period, runnable, null);
     }
@@ -81,26 +78,17 @@ public class SimpleJob {
      * @param period   单位：ms 多少ms执行一次
      * @param runnable
      */
-    public String registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-        if (runnable instanceof TimeRunTask) {
-            return register(time, (TimeRunTask) runnable);
-        } else {
-            return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, exceptionHandler));
-        }
+    public TimeRunTask registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        return register(System.currentTimeMillis() + time,
+                new TimeRunTask(this,
+                        runnable,
+                        period,
+                        exceptionHandler));
     }
 
-    /**
-     * 间隔重复执行 任务执行结束开始计时 period时间后再次执行
-     *
-     * @param time     单位：s 多少s之后执行
-     * @param period   单位：s 多少s执行一次
-     * @param runnable
-     */
-    public String registerWithFixedDelay(int time, int period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-
-        return registerWithFixedDelay(time * 1000L, period * 1000L, runnable, exceptionHandler);
+    public TimeRunTask registerWithFixedDelay(long time, TimeRunTask timeRunTask) {
+        return register(System.currentTimeMillis() + time, timeRunTask);
     }
-
 
     /**
      * 间隔重复执行 任务执行开始时计时 period时间后再次执行
@@ -109,7 +97,7 @@ public class SimpleJob {
      * @param period   单位：ms 多少ms执行一次
      * @param runnable
      */
-    public String registerAtFixedRate(long time, long period, Runnable runnable) {
+    public TimeRunTask registerAtFixedRate(long time, long period, Runnable runnable) {
         return registerAtFixedRate(time, period, runnable, null);
     }
 
@@ -120,26 +108,11 @@ public class SimpleJob {
      * @param period   单位：ms 多少ms执行一次
      * @param runnable
      */
-    public String registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-        if (runnable instanceof TimeRunTask) {
-            return register(time, (TimeRunTask) runnable);
-        } else {
-            return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, false, exceptionHandler));
-        }
+    public TimeRunTask registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+
+        return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, false, exceptionHandler));
 
     }
-
-    /**
-     * 间隔重复执行 任务执行开始时计时 period时间后再次执行
-     *
-     * @param time     单位：s 多少s之后执行
-     * @param period   单位：s 多少s执行一次
-     * @param runnable
-     */
-    public String registerAtFixedRate(int time, int period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
-        return registerAtFixedRate(time * 1000L, period * 1000L, runnable, exceptionHandler);
-    }
-
 
     /**
      * 支持cron表达式
@@ -149,7 +122,7 @@ public class SimpleJob {
      * @param exceptionHandler
      * @return
      */
-    public String registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+    public TimeRunTask registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler) {
         try {
 
             CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
@@ -161,21 +134,26 @@ public class SimpleJob {
         }
     }
 
-    public String registerByCron(String cron, Runnable runnable) {
-        try {
-            CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
-            Date next = cronSequenceGenerator.next(new Date());
-            return register(next.getTime(), new TimeRunTask(this, runnable, cronSequenceGenerator, null));
-
-        } catch (Exception e) {
-            throw new RuntimeException("the cron expression format error, please check");
-        }
+    public TimeRunTask registerByCron(String cron, Runnable runnable) {
+        return registerByCron(cron, runnable, null);
     }
 
 
+    /**
+     * 启动定时器
+     */
     public void start() {
         //启动时间监视器
         monitor.startRunning();
+    }
+
+    /**
+     * 停止任务
+     *
+     * @param taskId
+     */
+    public void stop(String taskId) {
+        queue.remove(taskId);
     }
 
 

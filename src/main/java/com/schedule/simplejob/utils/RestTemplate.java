@@ -1,7 +1,7 @@
 package com.schedule.simplejob.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.schedule.simplejob.reqregister.RegisterTaskForHttp;
+import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;

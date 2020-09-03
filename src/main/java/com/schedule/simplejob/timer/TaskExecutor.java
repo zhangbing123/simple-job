@@ -27,6 +27,9 @@ public class TaskExecutor extends ThreadPoolExecutor {
         List<TimeRunTask> errorTasks = new ArrayList<>(taskAndRmv.size());
 
         for (TimeRunTask runnable : taskAndRmv) {
+
+            if (runnable.isCancel()) continue;
+
             try {
                 execute(runnable);
             } catch (Exception e) {

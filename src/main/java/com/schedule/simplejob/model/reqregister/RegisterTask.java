@@ -1,4 +1,4 @@
-package com.schedule.simplejob.reqregister;
+package com.schedule.simplejob.model.reqregister;
 
 import com.schedule.simplejob.utils.SimpleAssert;
 import lombok.AllArgsConstructor;

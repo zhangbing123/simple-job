@@ -3,9 +3,7 @@ package com.schedule.simplejob.queue;
 import com.schedule.simplejob.timer.TimeRunTask;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @description: 封装一个任务队列
@@ -59,4 +57,18 @@ public class TaskQueue {
         return taskQueue.isEmpty();
     }
 
+    public void remove(String taskId) {
+        Set<Map.Entry<Long, List<TimeRunTask>>> entries = taskQueue.entrySet();
+        for (Map.Entry<Long, List<TimeRunTask>> entry : entries) {
+            List<TimeRunTask> timeRunTasks = entry.getValue();
+            if (!CollectionUtils.isEmpty(timeRunTasks)) {
+                for (TimeRunTask timeRunTask : timeRunTasks) {
+                    if (timeRunTask.getTaskId().equals(taskId)) {
+                        timeRunTask.setCancel(true);
+                    }
+                }
+            }
+        }
+
+    }
 }
