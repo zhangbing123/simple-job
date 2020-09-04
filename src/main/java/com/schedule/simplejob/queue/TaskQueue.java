@@ -57,6 +57,7 @@ public class TaskQueue {
         return taskQueue.isEmpty();
     }
 
+    //取消任务 不在执行任务
     public void remove(String taskId) {
         Set<Map.Entry<Long, List<TimeRunTask>>> entries = taskQueue.entrySet();
         for (Map.Entry<Long, List<TimeRunTask>> entry : entries) {

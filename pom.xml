@@ -51,10 +51,54 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- docker的maven插件，官网 https://github.com/spotify/docker-maven-plugin -->
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+
                 <configuration>
+                    <!--配置 Docker 的主机地址-->
+                    <dockerHost>http://47.100.15.16:2388</dockerHost>
+
+                    <!-- 镜像名称 -->
+                    <imageName>${project.artifactId}:latest</imageName>
+
+                    <baseImage>java</baseImage>
+
+                    <forceTags>true</forceTags>
+
+                    <imageTags>
+                        <imageTag>latest</imageTag>
+                    </imageTags>
+
+                    <!--相当于Dokcerfile文件中的ENTRYPOINT ["java","-jar","/app.jar"]-->
+                    <entryPoint>["java", "-jar","/${project.build.finalName}.jar"]</entryPoint>
+
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+
+                </configuration>
+
+            </plugin>
+
+            <!--执行测试用例的插件-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <!--忽略报错-->
                     <skip>true</skip>
                 </configuration>
             </plugin>

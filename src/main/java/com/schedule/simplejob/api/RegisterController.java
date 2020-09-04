@@ -145,10 +145,9 @@ public class RegisterController {
             timeRunTask = simpleJob.registerByCron(registerTask.getCron(), task);// 基于cron表达式的周期任务
         }
 
-        //需要进行数据统计
-        timeRunTask.setStatistical(isPersistence);
-
-        if (isPersistence) {
+        if (!isPersistence) {
+            //需要进行数据统计
+            timeRunTask.setStatistical(true);
             //入本地缓存  假的持久化
             this.addCache(registerTask, timeRunTask.getTaskId());
         }

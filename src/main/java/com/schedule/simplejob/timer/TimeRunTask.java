@@ -120,6 +120,7 @@ public class TimeRunTask implements Runnable {
         LocalCache.getInstance().addCache(StatisticalExecModel.STATISTICAL_DATA + taskId + ":time=" + date.getTime(), statisticalExecModel);
     }
 
+    //处理周期任务
     private void handlePeriod(Date currentDate) {
 
         long startTime = currentDate.getTime();//任务执行前的时间
@@ -145,7 +146,6 @@ public class TimeRunTask implements Runnable {
     public String getTaskId() {
         return taskId;
     }
-
 
     public void check() {
 
