@@ -37,6 +37,12 @@ public class RegisterController {
 
     private final static String TASK_PERISIT = "TASK_PERISIT";
 
+
+    @GetMapping("test")
+    public String test() {
+        return "static/b.html";
+    }
+
     /**
      * 通过http调用执行任务
      *
@@ -145,7 +151,7 @@ public class RegisterController {
             timeRunTask = simpleJob.registerByCron(registerTask.getCron(), task);// 基于cron表达式的周期任务
         }
 
-        if (!isPersistence) {
+        if (isPersistence) {
             //需要进行数据统计
             timeRunTask.setStatistical(true);
             //入本地缓存  假的持久化
