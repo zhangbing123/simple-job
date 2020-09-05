@@ -30,6 +30,4 @@ public class StatisticalExecModel {
 
     private String name;//任务名称
 
-    private String status;
-
 }

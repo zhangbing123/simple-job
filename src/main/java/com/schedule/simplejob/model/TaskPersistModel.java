@@ -42,4 +42,6 @@ public class TaskPersistModel {
 
     private String cron;//支持cron表达式
 
+    private String status;
+
 }

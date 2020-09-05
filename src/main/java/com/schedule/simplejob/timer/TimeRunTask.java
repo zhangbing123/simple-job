@@ -96,7 +96,7 @@ public class TimeRunTask implements Runnable {
         } catch (Exception e) {
 
             //执行失败 统计执行情况
-            statistical(false, e.getMessage());
+            statistical(false, e.getStackTrace().toString());
 
             //进入异常处理逻辑
             exceptionHandler.handle(e, this);

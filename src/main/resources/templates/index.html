@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>layout 后台大布局 - Layui</title>
+    <title>SimpleJob</title>
     <link rel="stylesheet" href="../static/layui/css/layui.css">
 </head>
 <body class="layui-layout-body">
@@ -31,19 +31,13 @@
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a class="" href="javascript:;">任务调度</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="javascript:;">定时任务</a></dd>
-                    </dl>
+            <ul class="layui-nav layui-nav-tree layui-inline"  lay-filter="test">
+                <li class="layui-nav-item">
+                    <a href="/task/job.html">定时任务</a>
                 </li>
 
                 <li class="layui-nav-item">
-                    <a class="" href="javascript:;">系统监控</a>
-                    <dl class="layui-nav-child">
-                        <dd><a href="/task/monitor.html">任务监控</a></dd>
-                    </dl>
+                    <a href="/task/monitor.html">任务监控</a>
                 </li>
 
             </ul>

@@ -33,26 +33,24 @@
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
             <ul class="layui-nav layui-nav-tree"  lay-filter="test">
-
-                <li class="layui-nav-item ">
-                    <a href="/task/job.html">定时任务</a>
-                </li>
-
                 <li class="layui-nav-item layui-this">
-                    <a href="">任务监控</a>
+                    <a href="">定时任务</a>
                 </li>
 
+                <li class="layui-nav-item">
+                    <a href="/task/monitor.html">任务监控</a>
+                </li>
             </ul>
         </div>
     </div>
 
     <div class="layui-body">
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-            <legend>执行统计</legend>
+            <legend>任务列表</legend>
         </fieldset>
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <table class="layui-table" lay-skin="line" id="execute-list"></table>
+            <table class="layui-table" lay-skin="line" id="task-list"></table>
         </div>
     </div>
 
@@ -61,8 +59,14 @@
         © simple-job
     </div>
 </div>
+
 <script src="../static/layui/layui.js"></script>
 <script src="../static/jquery.min.js"></script>
+
+<script type="text/html" id="switchTpl">
+    <!-- 这里的 checked 的状态只是演示 -->
+    <input type="checkbox" name="status" value="{{d.status}}" lay-skin="switch" lay-text="开启|禁用" lay-filter="setStatus" {{ d.status =='RUNNING' ? 'checked' : '' }} >
+</script>
 
 <script>
 
@@ -79,26 +83,28 @@
         var form = layui.form;
 
         table.render({
-            elem: '#execute-list'
-            ,url:'/register/statistical'
+            elem: '#task-list'
+            ,url:'/register/list'
             ,method:'GET'
-            ,cellMinWidth: 200 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
             ,cols: [[
-                {field:'taskId', title: '任务id'}
-                ,{field:'exception', title: '异常原因'}
-                ,{field:'excuteDate', title: '执行时间',templet:'<div>{{ Format(d.excuteDate,"yyyy-MM-dd hh:mm:ss")}}</div>'}
-                ,{field:'name',  title: '任务名称'}
-                ,{field:'successful', title: '执行结果'}
+                {field:'id', title: '任务id'}
+                ,{field:'name', title: '任务名称'}
+                ,{field:'type', title: '任务类型'}
+                ,{field:'time', title: '执行时间'}
+                ,{field:'periodT', title: '执行周期'}
+                ,{field:'desc', title: '任务描述'}
+                ,{field:'cron', title: 'cron'}
+                ,{field:'period', title: '周期任务'}
+                ,{field:'status', title: '任务状态', templet: '#switchTpl', unresize: true}
             ]]
             ,done: function(res, curr, count){
                 var index=-1;
                 //分类显示中文名称
-                $("[data-field='successful']").children().each(function () {
+                $("[data-field='period']").children().each(function () {
                     index++;
-                    if ($(this).text() == 'true') {
-                        $('tr').eq(index).css("color","#1E9FFF");
-                    }else if ($(this).text() == 'false') {
-                        $('tr').eq(index).css("color","#FF0000");
+                    if ($(this).text() == 'false') {
+                        $('tr').eq(index).css("color","#1DA");
                     }
                 });
 

@@ -92,17 +92,19 @@ public class RegisterController {
      * @return
      */
     @GetMapping("/list")
-    public List<TaskPersistModel> getList() {
+    public Result<List<TaskPersistModel>> getList(@RequestParam("page") int page, @RequestParam("limit") int limit) {
         Set<Map.Entry<Object, Object>> list = LocalCache.getInstance().list();
         List<TaskPersistModel> taskPersistModels = new ArrayList<>();
         for (Map.Entry<Object, Object> entry : list) {
             String key = (String) entry.getKey();
             if (key.contains(TASK_PERISIT)) {
-                taskPersistModels.add((TaskPersistModel) entry.getValue());
+                TaskPersistModel persistModel = (TaskPersistModel) entry.getValue();
+                persistModel.setStatus("RUNNING");
+                taskPersistModels.add(persistModel);
             }
         }
 
-        return taskPersistModels;
+        return Result.ok(taskPersistModels,"查询成功");
     }
 
     /**
@@ -121,7 +123,6 @@ public class RegisterController {
                 StatisticalExecModel statisticalExecModel = (StatisticalExecModel) entry.getValue();
                 TaskPersistModel persistModel = (TaskPersistModel) cache.getObject(TASK_PERISIT + statisticalExecModel.getTaskId());
                 statisticalExecModel.setName(persistModel.getName());
-                statisticalExecModel.setStatus("RUNNING");
                 statisticalExecModels.add(statisticalExecModel);
             }
         }
