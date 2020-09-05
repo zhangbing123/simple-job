@@ -8,6 +8,7 @@ import com.schedule.simplejob.model.UpdateTaskInfo;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
+import com.schedule.simplejob.result.Result;
 import com.schedule.simplejob.timer.SimpleJob;
 import com.schedule.simplejob.timer.TimeRunTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +111,7 @@ public class RegisterController {
      * @return
      */
     @GetMapping("/statistical")
-    public List<StatisticalExecModel> getStatisticalData() {
+    public Result<List<StatisticalExecModel>> getStatisticalData(@RequestParam("page") int page, @RequestParam("limit") int limit) {
         LocalCache cache = LocalCache.getInstance();
         Set<Map.Entry<Object, Object>> list = cache.list();
         List<StatisticalExecModel> statisticalExecModels = new ArrayList<>();
@@ -120,6 +121,7 @@ public class RegisterController {
                 StatisticalExecModel statisticalExecModel = (StatisticalExecModel) entry.getValue();
                 TaskPersistModel persistModel = (TaskPersistModel) cache.getObject(TASK_PERISIT + statisticalExecModel.getTaskId());
                 statisticalExecModel.setName(persistModel.getName());
+                statisticalExecModel.setStatus("RUNNING");
                 statisticalExecModels.add(statisticalExecModel);
             }
         }
@@ -128,7 +130,7 @@ public class RegisterController {
             statisticalExecModels.sort(Comparator.comparing(StatisticalExecModel::getExcuteDate).reversed());
         }
 
-        return statisticalExecModels;
+        return Result.ok(statisticalExecModels,"查询成功");
     }
 
 
