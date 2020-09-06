@@ -3,6 +3,7 @@ package com.schedule.simplejob.model.reqregister;
 import com.schedule.simplejob.config.SpringApplicationContextUtil;
 import com.schedule.simplejob.utils.SimpleAssert;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.ReflectionUtils;
@@ -17,6 +18,7 @@ import java.util.Objects;
  **/
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Data
 public class RegisterTaskForBean extends RegisterTask {
 

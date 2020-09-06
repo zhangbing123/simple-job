@@ -3,6 +3,7 @@ package com.schedule.simplejob.model.reqregister;
 import com.schedule.simplejob.utils.RestTemplate;
 import com.schedule.simplejob.utils.SimpleAssert;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
  **/
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Data
 public class RegisterTaskForHttp extends RegisterTask {
 

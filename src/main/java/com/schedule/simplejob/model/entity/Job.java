@@ -36,16 +36,16 @@ public class Job {
     private String methodName;
 
     @Column(name = "is_period")
-    private boolean isPeriod;
+    private Integer isPeriod;
 
     @Column(name = "period_time")
-    private long periodTime;
+    private Long periodTime;
 
-    private long time;
+    private Long time;
 
     private String args;
 
-    private String desc;
+    private String description;
 
     private String cron;
 
