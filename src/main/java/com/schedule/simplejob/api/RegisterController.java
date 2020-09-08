@@ -1,18 +1,20 @@
 package com.schedule.simplejob.api;
 
-import com.schedule.simplejob.model.StatisticalExecModel;
+import com.github.pagehelper.PageInfo;
 import com.schedule.simplejob.model.UpdateTaskInfo;
+import com.schedule.simplejob.model.dto.ExecuteJobDTO;
+import com.schedule.simplejob.model.entity.ExecuteJob;
 import com.schedule.simplejob.model.entity.Job;
+import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.result.Result;
+import com.schedule.simplejob.service.ExecuteJobService;
 import com.schedule.simplejob.service.JobService;
 import com.schedule.simplejob.timer.SimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * @description:
@@ -28,6 +30,9 @@ public class RegisterController {
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private ExecuteJobService executeJobService;
 
 
     /**
@@ -75,10 +80,10 @@ public class RegisterController {
      *
      * @return
      */
-    @GetMapping("/list")
-    public Result<List<Job>> getList(@RequestParam("page") int page, @RequestParam("limit") int limit) {
+    @PostMapping("/list")
+    public Result<PageInfo<Job>> getList(@RequestBody QueryReq queryReq) {
 
-        return Result.ok(jobService.list(), "查询成功");
+        return Result.ok(jobService.list(queryReq), "查询成功");
     }
 
     /**
@@ -86,9 +91,9 @@ public class RegisterController {
      *
      * @return
      */
-    @GetMapping("/statistical")
-    public Result<List<StatisticalExecModel>> getStatisticalData(@RequestParam("page") int page, @RequestParam("limit") int limit) {
-        return null;
+    @PostMapping("/statistical")
+    public Result<PageInfo<ExecuteJobDTO>> getStatisticalData(@RequestBody QueryReq queryReq) {
+        return Result.ok(executeJobService.list(queryReq), "查询成功");
     }
 
 

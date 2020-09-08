@@ -81,23 +81,32 @@
         table.render({
             elem: '#execute-list'
             ,url:'/register/statistical'
-            ,method:'GET'
+            ,method:'POST'
+            ,contentType:'application/json'
             ,cellMinWidth: 200 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,page:true
             ,cols: [[
-                {field:'taskId', title: '任务id'}
+                {field:'jobId', title: '任务id'}
                 ,{field:'exception', title: '异常原因'}
-                ,{field:'excuteDate', title: '执行时间',templet:'<div>{{ Format(d.excuteDate,"yyyy-MM-dd hh:mm:ss")}}</div>'}
+                ,{field:'excuteDate', title: '执行时间(ms)'}
                 ,{field:'name',  title: '任务名称'}
-                ,{field:'successful', title: '执行结果'}
+                ,{field:'createTime', title: '统计时间',templet:'<div>{{ Format(d.createTime,"yyyy-MM-dd hh:mm:ss")}}</div>'}
+                ,{field:'status', title: '执行状态'}
             ]]
+            ,parseData: function(res){
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data.list,//解析数据列表
+                    "count":res.data.total
+                }
+            }
             ,done: function(res, curr, count){
                 var index=-1;
                 //分类显示中文名称
-                $("[data-field='successful']").children().each(function () {
+                $("[data-field='status']").children().each(function () {
                     index++;
-                    if ($(this).text() == 'true') {
-                        $('tr').eq(index).css("color","#1E9FFF");
-                    }else if ($(this).text() == 'false') {
+                     if ($(this).text() == 'FAIL') {
                         $('tr').eq(index).css("color","#FF0000");
                     }
                 });

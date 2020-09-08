@@ -16,11 +16,13 @@ import org.springframework.util.StringUtils;
 @Data
 public class RegisterTask {
 
+    private String taskId;
+
     protected boolean isPeriod;
 
     protected long time;
 
-    protected long periodT;
+    protected long periodTime;
 
     protected String args;
 
@@ -30,6 +32,9 @@ public class RegisterTask {
 
     private String cron;//支持cron表达式
 
+    private boolean isStatistical;
+
+
     public Runnable createTask() {
         return null;
     }
@@ -37,7 +42,7 @@ public class RegisterTask {
     protected void check() {
 
         if (isPeriod)
-            SimpleAssert.notTrue(periodT <= 0, "If it is a periodic task, period cannot be less than 0");
+            SimpleAssert.notTrue(periodTime <= 0, "If it is a periodic task, period cannot be less than 0");
 
 
         SimpleAssert.notTrue(isPeriod && !StringUtils.isEmpty(getCron()), "cron and period cannot take effect at the same time");

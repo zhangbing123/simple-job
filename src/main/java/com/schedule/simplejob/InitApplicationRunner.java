@@ -5,7 +5,6 @@ import com.schedule.simplejob.model.reqregister.RegisterTask;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.service.JobService;
-import com.schedule.simplejob.timer.TimeRunTask;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -14,6 +13,9 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+/**
+ * 项目启动后  初始化一些东西
+ */
 @Slf4j
 @Component
 public class InitApplicationRunner implements CommandLineRunner {
@@ -24,6 +26,16 @@ public class InitApplicationRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        //对于持久化的任务  项目重启之后需要重新注册到任务队列中
+        reRegister();
+
+        //注册一个周期任务：清除n天前的任务统计数据
+//        registerTaskOfClear();
+
+
+    }
+
+    private void reRegister() {
         log.info("开始进行数据初始化...");
 
         /**
@@ -42,7 +54,6 @@ public class InitApplicationRunner implements CommandLineRunner {
             RegisterTask task = null;
 
             for (Job job : jobs) {
-
                 if ("HTTP".equals(job.getType())) {
                     task = RegisterTaskForHttp.builder()
                             .url(job.getUrl())
@@ -61,18 +72,17 @@ public class InitApplicationRunner implements CommandLineRunner {
 
                 task.setArgs(job.getArgs());
                 task.setCron(job.getCron());
-                task.setDesc(job.getDescription());
-                task.setName(job.getName());
-                task.setPeriodT(job.getPeriodTime());
+                task.setPeriodTime(job.getPeriodTime());
                 task.setPeriod(job.getIsPeriod() == 1);
                 task.setTime(job.getTime());
-                TimeRunTask timeRunTask = jobService.registerTaskNotPersist(task);
+                task.setTaskId(job.getId());
+                task.setStatistical(true);
+                jobService.registerTaskNotPersist(task);
+
                 count++;
             }
-
-            log.info("初始化完成，重新注册"+count+"个任务!!!!");
-
         }
+        log.info("初始化完成，重新注册" + count + "个任务!!!!");
 
     }
 }

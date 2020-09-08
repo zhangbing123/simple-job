@@ -1,10 +1,13 @@
 package com.schedule.simplejob.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.schedule.simplejob.curd.BaseMapper;
 import com.schedule.simplejob.curd.BaseServiceImpl;
 import com.schedule.simplejob.exchandler.StopTaskExceptionHandler;
 import com.schedule.simplejob.mapper.JobMapper;
 import com.schedule.simplejob.model.entity.Job;
+import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -56,7 +60,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
                 .cron(registerTask.getCron())
                 .description(registerTask.getDesc())
                 .isPeriod(registerTask.isPeriod() ? 1 : 0)
-                .periodTime(registerTask.getPeriodT())
+                .periodTime(registerTask.getPeriodTime())
                 .time(registerTask.getTime())
                 .name(registerTask.getName())
                 .status("RUNNING")
@@ -85,8 +89,14 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
     }
 
     @Override
-    public List<Job> list() {
-        return selectAll();
+    public PageInfo<Job> list(QueryReq queryReq) {
+        PageHelper.startPage(queryReq.getPage(), queryReq.getLimit());
+        List<Job> jobList = selectAll();
+        if (CollectionUtils.isEmpty(jobList)) {
+            return new PageInfo<>();
+        }
+
+        return new PageInfo<>(jobList);
     }
 
     @Override
@@ -95,8 +105,6 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
         TimeRunTask timeRunTask = registerTaskNotPersist(registerTask);
 
         if (isPersistence) {
-            //需要进行数据统计
-            timeRunTask.setStatistical(true);
             //入本地缓存  假的持久化
             this.save(registerTask, timeRunTask.getTaskId());
         }
@@ -115,15 +123,16 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
             if (registerTask.isPeriod()) {
                 //周期任务
                 timeRunTask = simpleJob.registerWithFixedDelay(registerTask.getTime(),
-                        registerTask.getPeriodT(),
+                        registerTask.getPeriodTime(),
                         task,
-                        new StopTaskExceptionHandler());
+                        new StopTaskExceptionHandler(), registerTask.getTaskId(), registerTask.isStatistical());
 
             } else {
-                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task);
+                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(), registerTask.isStatistical());
             }
         } else {
-            timeRunTask = simpleJob.registerByCron(registerTask.getCron(), task);// 基于cron表达式的周期任务
+            // 基于cron表达式的周期任务
+            timeRunTask = simpleJob.registerByCron(registerTask.getCron(), task, null, registerTask.getTaskId(), registerTask.isStatistical());
         }
         return timeRunTask;
     }

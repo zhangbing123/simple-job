@@ -93,14 +93,16 @@
         table.render({
             elem: '#task-list'
             ,url:'/register/list'
-            ,method:'GET'
+            ,method:'POST'
+            ,contentType:'application/json'
             ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+            ,page:true
             ,cols: [[
                 {field:'id', title: '任务id'}
                 ,{field:'name', title: '任务名称'}
                 ,{field:'type', title: '任务类型'}
-                ,{field:'time', title: '执行时间'}
-                ,{field:'periodT', title: '执行周期'}
+                ,{field:'time', title: '执行时间(ms)'}
+                ,{field:'periodTime', title: '执行周期'}
                 ,{field:'desc', title: '任务描述'}
                 ,{field:'cron', title: 'cron'}
                 ,{field:'period', title: '周期任务'}
@@ -108,6 +110,14 @@
                 ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
 
             ]]
+            ,parseData: function(res){
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "data": res.data.list,//解析数据列表
+                    "count":res.data.total
+                }
+            }
             ,done: function(res, curr, count){
                 var index=-1;
                 //分类显示中文名称
@@ -117,7 +127,6 @@
                         $('tr').eq(index).css("color","#1DA");
                     }
                 });
-
 
             }
 

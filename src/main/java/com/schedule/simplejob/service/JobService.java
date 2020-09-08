@@ -1,9 +1,10 @@
 package com.schedule.simplejob.service;
 
+import com.github.pagehelper.PageInfo;
 import com.schedule.simplejob.curd.BaseService;
 import com.schedule.simplejob.model.entity.Job;
+import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
-import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.timer.TimeRunTask;
 
 import java.util.List;
@@ -26,11 +27,12 @@ public interface JobService extends BaseService<Job, String> {
      *
      * @return
      */
-    List<Job> list();
+    PageInfo<Job> list(QueryReq queryReq);
 
 
     /**
      * 任务注册 并持久化到库
+     *
      * @param registerTask
      * @return
      */

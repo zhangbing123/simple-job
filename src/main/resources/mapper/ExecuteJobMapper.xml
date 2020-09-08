@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.schedule.simplejob.mapper.ExecuteJobMapper">
+    <resultMap id="BaseResultMap" type="com.schedule.simplejob.model.entity.ExecuteJob">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="job_id" property="jobId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="exception" property="exception" jdbcType="VARCHAR"/>
+        <result column="excute_date" property="excuteDate" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="DTOBaseResultMap" type="com.schedule.simplejob.model.dto.ExecuteJobDTO">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="job_id" property="jobId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="exception" property="exception" jdbcType="VARCHAR"/>
+        <result column="excute_date" property="excuteDate" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    job_id, status, exception, excute_date, create_time, modify_time
+  </sql>
+
+    <select id="selectByParam" resultMap="DTOBaseResultMap">
+        select * from t_execute_job
+    </select>
+</mapper>

@@ -1,10 +1,10 @@
 package com.schedule.simplejob.timer;
 
-import com.schedule.simplejob.component.LocalCache;
-import com.schedule.simplejob.exchandler.DefaultTaskExceptionHandler;
 import com.schedule.simplejob.exchandler.TaskExceptionHandler;
-import com.schedule.simplejob.model.StatisticalExecModel;
+import com.schedule.simplejob.service.ExecuteJobService;
+import com.schedule.simplejob.service.impl.ExecuteJobServiceImpl;
 import org.springframework.scheduling.support.CronSequenceGenerator;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -30,6 +30,9 @@ public class TimeRunTask implements Runnable {
      */
     private long period;
 
+    /**
+     * 周期任务 距离下一次执行的时间计算是从本次任务执行开始时计时  还是从本次任务执行结束开始计时？
+     */
     private boolean isDelay;
 
     private TaskExceptionHandler exceptionHandler;
@@ -46,36 +49,47 @@ public class TimeRunTask implements Runnable {
         isCancel = cancel;
     }
 
-    public void setStatistical(boolean statistical) {
-        isStatistical = statistical;
+    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler) {
+        this(simpleJob, runnable, cronSequenceGenerator, exceptionHandler, null, false);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler) {
-        UUID uuid = UUID.randomUUID();
-        this.taskId = uuid.toString();
-        this.simpleJob = simpleJob;
-        this.runnable = runnable;
-        this.cronSequenceGenerator = cronSequenceGenerator;
-        this.period = -2;
-        this.exceptionHandler = exceptionHandler == null ? new DefaultTaskExceptionHandler() : exceptionHandler;
+    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+        this(taskId, simpleJob, runnable, cronSequenceGenerator, -2, false, exceptionHandler, isStatistical);
     }
 
     public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period) {
         this(simpleJob, runnable, period, false, null);
     }
 
+    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, String taskId, boolean isStatistical) {
+        this(simpleJob, runnable, period, false, null, taskId, isStatistical);
+    }
+
     public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler) {
         this(simpleJob, runnable, period, true, exceptionHandler);
     }
 
+    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+        this(taskId, simpleJob, runnable, null, period, false, exceptionHandler, isStatistical);
+    }
+
     public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler) {
+        this(simpleJob, runnable, period, isDelay, exceptionHandler, null, false);
+    }
+
+    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+        this(taskId, simpleJob, runnable, null, period, isDelay, exceptionHandler, isStatistical);
+    }
+
+    public TimeRunTask(String taskId, SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, boolean isStatistical) {
+        this.taskId = StringUtils.isEmpty(taskId) ? UUID.randomUUID().toString() : taskId;
         this.simpleJob = simpleJob;
         this.runnable = runnable;
+        this.cronSequenceGenerator = cronSequenceGenerator;
         this.period = period;
         this.isDelay = isDelay;
-        this.exceptionHandler = exceptionHandler == null ? new DefaultTaskExceptionHandler() : exceptionHandler;
-        UUID uuid = UUID.randomUUID();
-        this.taskId = uuid.toString();
+        this.exceptionHandler = exceptionHandler;
+        this.isStatistical = isStatistical;
     }
 
     @Override
@@ -84,19 +98,20 @@ public class TimeRunTask implements Runnable {
         if (isCancel) return;
 
         Date currentDate = new Date();
+        long runPreTime = currentDate.getTime();
 
         try {
             //执行任务
             runnable.run();
 
             //执行成功 统计执行情况
-            statistical(true, null);
+            statistical(true, null, System.currentTimeMillis() - runPreTime);
 
 
         } catch (Exception e) {
 
             //执行失败 统计执行情况
-            statistical(false, e.getStackTrace().toString());
+            statistical(false, e.getMessage(), System.currentTimeMillis() - runPreTime);
 
             //进入异常处理逻辑
             exceptionHandler.handle(e, this);
@@ -106,18 +121,17 @@ public class TimeRunTask implements Runnable {
     }
 
     //统计任务执行情况
-    private void statistical(boolean isSuccessful, String exception) {
+    private void statistical(boolean isSuccessful, String exception, long execuTime) {
 
         if (!isStatistical) return;//无需统计
 
-        Date date = new Date();
-        StatisticalExecModel statisticalExecModel = StatisticalExecModel.builder()
-                .taskId(taskId)
-                .isSuccessful(isSuccessful)
-                .excuteDate(date)
-                .exception(exception)
-                .build();
-        LocalCache.getInstance().addCache(StatisticalExecModel.STATISTICAL_DATA + taskId + ":time=" + date.getTime(), statisticalExecModel);
+        ExecuteJobService executeJobService = ExecuteJobServiceImpl.getInstance();
+
+        if (isSuccessful) {
+            executeJobService.saveSuccessful(execuTime, taskId);
+        } else {
+            executeJobService.saveFail(execuTime, taskId, exception);
+        }
     }
 
     //处理周期任务
