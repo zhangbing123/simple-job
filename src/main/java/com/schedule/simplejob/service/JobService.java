@@ -7,8 +7,6 @@ import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
 import com.schedule.simplejob.timer.TimeRunTask;
 
-import java.util.List;
-
 public interface JobService extends BaseService<Job, String> {
 
 
@@ -40,4 +38,13 @@ public interface JobService extends BaseService<Job, String> {
 
 
     TimeRunTask registerTaskNotPersist(RegisterTask registerTask);
+
+    /**
+     * 持久化的任务  重新启动
+     *
+     * @param job
+     * @return
+     */
+    boolean reRegister(Job job);
+
 }

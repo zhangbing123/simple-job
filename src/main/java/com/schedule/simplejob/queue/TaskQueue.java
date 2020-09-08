@@ -58,7 +58,7 @@ public class TaskQueue {
     }
 
     //取消任务 不在执行任务
-    public void remove(String taskId) {
+    public boolean remove(String taskId) {
         Set<Map.Entry<Long, List<TimeRunTask>>> entries = taskQueue.entrySet();
         for (Map.Entry<Long, List<TimeRunTask>> entry : entries) {
             List<TimeRunTask> timeRunTasks = entry.getValue();
@@ -66,10 +66,13 @@ public class TaskQueue {
                 for (TimeRunTask timeRunTask : timeRunTasks) {
                     if (timeRunTask.getTaskId().equals(taskId)) {
                         timeRunTask.setCancel(true);
+                       return true;
                     }
                 }
             }
         }
+
+        return false;
 
     }
 }

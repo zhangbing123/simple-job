@@ -155,8 +155,8 @@ public class SimpleJob {
      *
      * @param taskId
      */
-    public void stop(String taskId) {
-        queue.remove(taskId);
+    public boolean stop(String taskId) {
+        return queue.remove(taskId);
     }
 
 

@@ -3,7 +3,6 @@ package com.schedule.simplejob.api;
 import com.github.pagehelper.PageInfo;
 import com.schedule.simplejob.model.UpdateTaskInfo;
 import com.schedule.simplejob.model.dto.ExecuteJobDTO;
-import com.schedule.simplejob.model.entity.ExecuteJob;
 import com.schedule.simplejob.model.entity.Job;
 import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
@@ -14,7 +13,10 @@ import com.schedule.simplejob.service.JobService;
 import com.schedule.simplejob.timer.SimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @description:
@@ -70,9 +72,31 @@ public class RegisterController {
 
         if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new RuntimeException("the taskId is null");
 
-        simpleJob.stop(taskInfo.getTaskId());
+        if (simpleJob.stop(taskInfo.getTaskId())) {
+            jobService.updateByPrimaryKeySelective(Job.builder().id(taskInfo.getTaskId()).status("STOP").build());
+        }
 
         return Result.ok(null, "操作成功");
+    }
+
+    /**
+     * 重启任务
+     *
+     * @param taskInfo
+     * @return
+     */
+    @PostMapping("/reStart")
+    public Result reStart(@RequestBody UpdateTaskInfo taskInfo) {
+
+        if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new RuntimeException("the taskId is null");
+
+        Job job = jobService.selectByPrimaryKey(taskInfo.getTaskId());
+        if (job == null) throw new RuntimeException("job not found");
+        if (!job.getStatus().equals("STOP")) return Result.ok(null, "the job is Running");
+
+        jobService.reRegister(job);
+
+        return Result.ok(null, "重启成功");
     }
 
     /**

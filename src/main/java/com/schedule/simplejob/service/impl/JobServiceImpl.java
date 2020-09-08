@@ -137,5 +137,41 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
         return timeRunTask;
     }
 
+    @Override
+    public boolean reRegister(Job job) {
+        RegisterTask task = null;
+
+        if (job.getIsPeriod() == 0 && job.getTime() < System.currentTimeMillis()) {
+            //非周期任务 且任务执行时间已过的  不在执行
+            return false;
+        }
+
+        if ("HTTP".equals(job.getType())) {
+            task = RegisterTaskForHttp.builder()
+                    .url(job.getUrl())
+                    .httpMethod(job.getHttpMethod())
+                    .build();
+
+
+        } else if ("BEAN".equals(job.getType())) {
+
+            task = RegisterTaskForBean.builder()
+                    .beanName(job.getBeanName())
+                    .methodName(job.getMethodName())
+                    .build();
+
+        }
+
+        task.setArgs(job.getArgs());
+        task.setCron(job.getCron());
+        task.setPeriodTime(job.getPeriodTime());
+        task.setPeriod(job.getIsPeriod() == 1);
+        task.setTime(job.getTime());
+        task.setTaskId(job.getId());
+        task.setStatistical(true);
+        this.registerTaskNotPersist(task);
+        return true;
+    }
+
 
 }
