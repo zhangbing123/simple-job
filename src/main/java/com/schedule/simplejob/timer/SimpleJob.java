@@ -1,5 +1,6 @@
 package com.schedule.simplejob.timer;
 
+import com.schedule.simplejob.exception.SimpleRunTimeException;
 import com.schedule.simplejob.exchandler.TaskExceptionHandler;
 import com.schedule.simplejob.queue.TaskQueue;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class SimpleJob {
      */
     public TimeRunTask register(long time, TimeRunTask runnable) {
 
-        if (time < 0) throw new RuntimeException("the time is null");
+        if (time < 0) throw new SimpleRunTimeException("the time is null");
 
         runnable.check();
 
@@ -137,7 +138,7 @@ public class SimpleJob {
             return register(next.getTime(), new TimeRunTask(this, runnable, cronSequenceGenerator, exceptionHandler, taskId, isStatistical));
 
         } catch (Exception e) {
-            throw new RuntimeException("the cron expression format error, please check");
+            throw new SimpleRunTimeException("the cron expression format error, please check");
         }
     }
 

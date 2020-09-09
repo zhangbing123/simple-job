@@ -1,28 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.schedule.simplejob.mapper.JobMapper" >
-  <resultMap id="BaseResultMap" type="com.schedule.simplejob.model.entity.Job" >
-    <id column="id" property="id" jdbcType="VARCHAR" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="type" property="type" jdbcType="VARCHAR" />
-    <result column="url" property="url" jdbcType="VARCHAR" />
-    <result column="http_method" property="httpMethod" jdbcType="VARCHAR" />
-    <result column="bean_name" property="beanName" jdbcType="VARCHAR" />
-    <result column="method_name" property="methodName" jdbcType="VARCHAR" />
-    <result column="is_period" property="isPeriod" jdbcType="BIT" />
-    <result column="period_time" property="periodTime" jdbcType="BIGINT" />
-    <result column="time" property="time" jdbcType="BIGINT" />
-    <result column="args" property="args" jdbcType="VARCHAR" />
-    <result column="description" property="description" jdbcType="VARCHAR" />
-    <result column="cron" property="cron" jdbcType="VARCHAR" />
-    <result column="status" property="status" jdbcType="VARCHAR" />
-    <result column="deleted" property="deleted" jdbcType="BIT" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
-    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
-  </resultMap>
+<mapper namespace="com.schedule.simplejob.mapper.JobMapper">
+    <resultMap id="BaseResultMap" type="com.schedule.simplejob.model.entity.Job">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="http_method" property="httpMethod" jdbcType="VARCHAR"/>
+        <result column="bean_name" property="beanName" jdbcType="VARCHAR"/>
+        <result column="method_name" property="methodName" jdbcType="VARCHAR"/>
+        <result column="is_period" property="isPeriod" jdbcType="BIT"/>
+        <result column="period_time" property="periodTime" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="BIGINT"/>
+        <result column="args" property="args" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="cron" property="cron" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="deleted" property="deleted" jdbcType="BIT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
 
-  <sql id="Base_Column_List" >
+    <resultMap id="DTOBaseResultMap" type="com.schedule.simplejob.model.dto.JobDTO">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="http_method" property="httpMethod" jdbcType="VARCHAR"/>
+        <result column="bean_name" property="beanName" jdbcType="VARCHAR"/>
+        <result column="method_name" property="methodName" jdbcType="VARCHAR"/>
+        <result column="is_period" property="isPeriod" jdbcType="BIT"/>
+        <result column="period_time" property="periodTime" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="BIGINT"/>
+        <result column="args" property="args" jdbcType="VARCHAR"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="cron" property="cron" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="deleted" property="deleted" jdbcType="BIT"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
     id, name, type, url, http_method, bean_name, method_name, is_period, period_time, 
     time, args, description, cron, status, deleted, create_time, modify_time
   </sql>
+
+    <select id="selectParam" resultMap="DTOBaseResultMap">
+        select * from t_job order by create_time desc
+    </select>
 </mapper>

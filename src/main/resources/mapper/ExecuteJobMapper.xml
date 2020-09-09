@@ -26,6 +26,6 @@
   </sql>
 
     <select id="selectByParam" resultMap="DTOBaseResultMap">
-        select * from t_execute_job
+        select * from t_execute_job order by create_time desc
     </select>
 </mapper>

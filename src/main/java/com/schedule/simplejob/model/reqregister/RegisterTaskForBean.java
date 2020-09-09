@@ -1,6 +1,7 @@
 package com.schedule.simplejob.model.reqregister;
 
 import com.schedule.simplejob.config.SpringApplicationContextUtil;
+import com.schedule.simplejob.exception.SimpleRunTimeException;
 import com.schedule.simplejob.utils.SimpleAssert;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +39,7 @@ public class RegisterTaskForBean extends RegisterTask {
         Object bean = SpringApplicationContextUtil.getBean(beanName);
 
         if (Objects.isNull(bean)) {
-            throw new RuntimeException("not found the bean by beanName");
+            throw new SimpleRunTimeException("not found the bean by beanName");
         }
 
         boolean haveArgs = false;
@@ -52,7 +53,7 @@ public class RegisterTaskForBean extends RegisterTask {
         }
 
         if (Objects.isNull(method)) {
-            throw new RuntimeException("not found the method by methodName");
+            throw new SimpleRunTimeException("not found the method by methodName");
         }
 
         Runnable runnable = null;

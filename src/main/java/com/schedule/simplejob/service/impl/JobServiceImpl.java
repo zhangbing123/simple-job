@@ -91,7 +91,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
     @Override
     public PageInfo<Job> list(QueryReq queryReq) {
         PageHelper.startPage(queryReq.getPage(), queryReq.getLimit());
-        List<Job> jobList = selectAll();
+        List<Job> jobList = jobMapper.selectParam();
         if (CollectionUtils.isEmpty(jobList)) {
             return new PageInfo<>();
         }
@@ -105,7 +105,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
         TimeRunTask timeRunTask = registerTaskNotPersist(registerTask);
 
         if (isPersistence) {
-            //入本地缓存  假的持久化
+            //持久化
             this.save(registerTask, timeRunTask.getTaskId());
         }
 

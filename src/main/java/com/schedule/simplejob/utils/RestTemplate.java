@@ -1,6 +1,7 @@
 package com.schedule.simplejob.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.schedule.simplejob.exception.SimpleRunTimeException;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -36,7 +37,7 @@ public class RestTemplate {
             return sendGetHttpReq(registerTaskForHttp);
         } else {
             log.error("{} request mode is not supported at present", registerTaskForHttp.getHttpMethod());
-            throw new RuntimeException(registerTaskForHttp.getHttpMethod() + "request mode is not supported at present");
+            throw new SimpleRunTimeException(registerTaskForHttp.getHttpMethod() + "request mode is not supported at present");
         }
 
     }
@@ -58,7 +59,7 @@ public class RestTemplate {
             try {
                 map = JSON.parseObject(args, Map.class);
             } catch (Exception e) {
-                throw new RuntimeException("参数结构错误");
+                throw new SimpleRunTimeException("参数结构错误");
             }
         }
 

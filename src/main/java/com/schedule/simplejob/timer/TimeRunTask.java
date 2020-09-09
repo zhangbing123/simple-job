@@ -1,5 +1,6 @@
 package com.schedule.simplejob.timer;
 
+import com.schedule.simplejob.exception.SimpleRunTimeException;
 import com.schedule.simplejob.exchandler.TaskExceptionHandler;
 import com.schedule.simplejob.service.ExecuteJobService;
 import com.schedule.simplejob.service.impl.ExecuteJobServiceImpl;
@@ -163,6 +164,6 @@ public class TimeRunTask implements Runnable {
 
     public void check() {
 
-        if (runnable == null) throw new RuntimeException("the task is null");
+        if (runnable == null) throw new SimpleRunTimeException("the task is null");
     }
 }

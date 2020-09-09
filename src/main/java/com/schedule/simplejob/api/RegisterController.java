@@ -1,6 +1,7 @@
 package com.schedule.simplejob.api;
 
 import com.github.pagehelper.PageInfo;
+import com.schedule.simplejob.exception.SimpleRunTimeException;
 import com.schedule.simplejob.model.UpdateTaskInfo;
 import com.schedule.simplejob.model.dto.ExecuteJobDTO;
 import com.schedule.simplejob.model.entity.Job;
@@ -46,6 +47,7 @@ public class RegisterController {
     @PostMapping("/httpTask")
     public Result<String> httpTask(@RequestBody RegisterTaskForHttp registerTask) {
 
+        registerTask.setStatistical(true);
         return Result.ok(jobService.registerTaskAndPersist(registerTask), "操作成功");
     }
 
@@ -57,7 +59,7 @@ public class RegisterController {
      */
     @PostMapping("/beanTask")
     public Result<String> httpTask(@RequestBody RegisterTaskForBean registerTask) {
-
+        registerTask.setStatistical(true);
         return Result.ok(jobService.registerTaskAndPersist(registerTask), "操作成功");
     }
 
@@ -70,13 +72,12 @@ public class RegisterController {
     @PostMapping("/stop")
     public Result stopTask(@RequestBody UpdateTaskInfo taskInfo) {
 
-        if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new RuntimeException("the taskId is null");
+        if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new SimpleRunTimeException("the taskId is null");
 
-        if (simpleJob.stop(taskInfo.getTaskId())) {
-            jobService.updateByPrimaryKeySelective(Job.builder().id(taskInfo.getTaskId()).status("STOP").build());
-        }
+        simpleJob.stop(taskInfo.getTaskId());
+        jobService.updateByPrimaryKeySelective(Job.builder().id(taskInfo.getTaskId()).status("STOP").build());
 
-        return Result.ok(null, "操作成功");
+        return Result.ok(null, "禁用成功");
     }
 
     /**
@@ -88,15 +89,15 @@ public class RegisterController {
     @PostMapping("/reStart")
     public Result reStart(@RequestBody UpdateTaskInfo taskInfo) {
 
-        if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new RuntimeException("the taskId is null");
+        if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new SimpleRunTimeException("the taskId is null");
 
         Job job = jobService.selectByPrimaryKey(taskInfo.getTaskId());
-        if (job == null) throw new RuntimeException("job not found");
+        if (job == null) throw new SimpleRunTimeException("job not found");
         if (!job.getStatus().equals("STOP")) return Result.ok(null, "the job is Running");
 
-        jobService.reRegister(job);
-
-        return Result.ok(null, "重启成功");
+        boolean b = jobService.reRegister(job);
+        jobService.updateByPrimaryKeySelective(Job.builder().id(taskInfo.getTaskId()).status("RUNNING").build());
+        return Result.ok(null, b ? "重启成功" : "任务已执行过");
     }
 
     /**
