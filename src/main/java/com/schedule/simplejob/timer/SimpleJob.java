@@ -32,7 +32,7 @@ public class SimpleJob {
      * @param runnable 执行任务
      * @return TimeRunTask  任务
      */
-    public TimeRunTask register(long time, TimeRunTask runnable) {
+    public TimeTaskRunner register(long time, TimeTaskRunner runnable) {
 
         if (time < 0) throw new SimpleRunTimeException("the time is null");
 
@@ -56,12 +56,12 @@ public class SimpleJob {
      * @param time     ms    执行的时间点
      * @param runnable 执行任务
      */
-    public TimeRunTask registerAtTime(long time, Runnable runnable) {
+    public TimeTaskRunner registerAtTime(long time, Runnable runnable) {
         return registerAtTime(time, runnable, null, false);
     }
 
-    public TimeRunTask registerAtTime(long time, Runnable runnable, String taskId, boolean isStatistical) {
-        return register(time, new TimeRunTask(this, runnable, -1, taskId, isStatistical));
+    public TimeTaskRunner registerAtTime(long time, Runnable runnable, String taskId, boolean isStatistical) {
+        return register(time, new TimeTaskRunner(this, runnable, -1, taskId, isStatistical));
     }
 
 
@@ -72,18 +72,18 @@ public class SimpleJob {
      * @param period   单位：ms 多少ms执行一次
      * @param runnable
      */
-    public TimeRunTask registerWithFixedDelay(long time, long period, Runnable runnable) {
+    public TimeTaskRunner registerWithFixedDelay(long time, long period, Runnable runnable) {
 
         return registerWithFixedDelay(time, period, runnable, null);
     }
 
-    public TimeRunTask registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
         return registerWithFixedDelay(time, period, runnable, exceptionHandler, null, false);
     }
 
-    public TimeRunTask registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner registerWithFixedDelay(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
         return register(System.currentTimeMillis() + time,
-                new TimeRunTask(this,
+                new TimeTaskRunner(this,
                         runnable,
                         period,
                         exceptionHandler, taskId, isStatistical));
@@ -97,19 +97,19 @@ public class SimpleJob {
      * @param period   单位：ms 多少ms执行一次
      * @param runnable
      */
-    public TimeRunTask registerAtFixedRate(long time, long period, Runnable runnable) {
+    public TimeTaskRunner registerAtFixedRate(long time, long period, Runnable runnable) {
         return registerAtFixedRate(time, period, runnable, null);
     }
 
-    public TimeRunTask registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler) {
 
         return registerAtFixedRate(time, period, runnable, exceptionHandler, null, false);
 
     }
 
-    public TimeRunTask registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner registerAtFixedRate(long time, long period, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
 
-        return register(System.currentTimeMillis() + time, new TimeRunTask(this, runnable, period, false, exceptionHandler, taskId, isStatistical));
+        return register(System.currentTimeMillis() + time, new TimeTaskRunner(this, runnable, period, false, exceptionHandler, taskId, isStatistical));
 
     }
 
@@ -122,20 +122,20 @@ public class SimpleJob {
      * @param
      * @return
      */
-    public TimeRunTask registerByCron(String cron, Runnable runnable) {
+    public TimeTaskRunner registerByCron(String cron, Runnable runnable) {
         return registerByCron(cron, runnable, null);
     }
 
-    public TimeRunTask registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler) {
         return registerByCron(cron, runnable, exceptionHandler, null, false);
     }
 
-    public TimeRunTask registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner registerByCron(String cron, Runnable runnable, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
         try {
 
             CronSequenceGenerator cronSequenceGenerator = new CronSequenceGenerator(cron);
             Date next = cronSequenceGenerator.next(new Date());
-            return register(next.getTime(), new TimeRunTask(this, runnable, cronSequenceGenerator, exceptionHandler, taskId, isStatistical));
+            return register(next.getTime(), new TimeTaskRunner(this, runnable, cronSequenceGenerator, exceptionHandler, taskId, isStatistical));
 
         } catch (Exception e) {
             throw new SimpleRunTimeException("the cron expression format error, please check");

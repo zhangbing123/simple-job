@@ -80,7 +80,7 @@ public class TimeMonitor {
                 if (currentTimeMillis >= time) {
                     queue.addQueues(time, executor.runTask(queue.getTaskAndRmv()));
                 } else {
-                    //未到触发事件  线程等待
+                    //未到触发时间  线程等待
                     try {
                         queue.wait(time - currentTimeMillis);
                     } catch (InterruptedException e) {

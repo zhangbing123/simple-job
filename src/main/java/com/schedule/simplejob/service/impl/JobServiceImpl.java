@@ -13,7 +13,7 @@ import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.service.JobService;
 import com.schedule.simplejob.timer.SimpleJob;
-import com.schedule.simplejob.timer.TimeRunTask;
+import com.schedule.simplejob.timer.TimeTaskRunner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -102,7 +102,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
     @Override
     public String registerTaskAndPersist(RegisterTask registerTask) {
 
-        TimeRunTask timeRunTask = registerTaskNotPersist(registerTask);
+        TimeTaskRunner timeRunTask = registerTaskNotPersist(registerTask);
 
         if (isPersistence) {
             //持久化
@@ -114,10 +114,10 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
     }
 
     @Override
-    public TimeRunTask registerTaskNotPersist(RegisterTask registerTask) {
+    public TimeTaskRunner registerTaskNotPersist(RegisterTask registerTask) {
         Runnable task = registerTask.createTask();
 
-        TimeRunTask timeRunTask = null;
+        TimeTaskRunner timeRunTask = null;
 
         if (StringUtils.isEmpty(registerTask.getCron())) {
             if (registerTask.isPeriod()) {

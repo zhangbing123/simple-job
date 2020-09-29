@@ -1,8 +1,8 @@
-package com.schedule.simplejob.zbtest;
+package com.schedule.simplejob.test;
 
 import com.alibaba.fastjson.JSON;
 import com.schedule.simplejob.timer.SimpleJob;
-import com.schedule.simplejob.timer.TimeRunTask;
+import com.schedule.simplejob.timer.TimeTaskRunner;
 
 /**
  * @description:
@@ -13,11 +13,11 @@ public class TaskSerializeTest {
 
     public static void main(String[] args) {
         SimpleJob simpleJob = new SimpleJob();
-        TimeRunTask task = new TimeRunTask(simpleJob, new RunTask("testThread"), -1);
+        TimeTaskRunner task = new TimeTaskRunner(simpleJob, new RunTask("testThread"), -1);
 
         String string = JSON.toJSONString(task);
         System.out.println(string);
-        TimeRunTask timeRunTask = JSON.parseObject(string, TimeRunTask.class);
+        TimeTaskRunner timeRunTask = JSON.parseObject(string, TimeTaskRunner.class);
         new Thread(timeRunTask).start();
     }
 

@@ -15,7 +15,7 @@ import java.util.UUID;
  * @author: zhangbing
  * @create: 2020-08-31 16:12
  **/
-public class TimeRunTask implements Runnable {
+public class TimeTaskRunner implements Runnable {
 
     private String taskId;
 
@@ -50,39 +50,39 @@ public class TimeRunTask implements Runnable {
         isCancel = cancel;
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler) {
         this(simpleJob, runnable, cronSequenceGenerator, exceptionHandler, null, false);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
         this(taskId, simpleJob, runnable, cronSequenceGenerator, -2, false, exceptionHandler, isStatistical);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period) {
         this(simpleJob, runnable, period, false, null);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, String taskId, boolean isStatistical) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period, String taskId, boolean isStatistical) {
         this(simpleJob, runnable, period, false, null, taskId, isStatistical);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler) {
         this(simpleJob, runnable, period, true, exceptionHandler);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
         this(taskId, simpleJob, runnable, null, period, false, exceptionHandler, isStatistical);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler) {
         this(simpleJob, runnable, period, isDelay, exceptionHandler, null, false);
     }
 
-    public TimeRunTask(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
+    public TimeTaskRunner(SimpleJob simpleJob, Runnable runnable, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, String taskId, boolean isStatistical) {
         this(taskId, simpleJob, runnable, null, period, isDelay, exceptionHandler, isStatistical);
     }
 
-    public TimeRunTask(String taskId, SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, boolean isStatistical) {
+    public TimeTaskRunner(String taskId, SimpleJob simpleJob, Runnable runnable, CronSequenceGenerator cronSequenceGenerator, long period, boolean isDelay, TaskExceptionHandler exceptionHandler, boolean isStatistical) {
         this.taskId = StringUtils.isEmpty(taskId) ? UUID.randomUUID().toString() : taskId;
         this.simpleJob = simpleJob;
         this.runnable = runnable;
@@ -101,22 +101,21 @@ public class TimeRunTask implements Runnable {
         Date currentDate = new Date();
         long runPreTime = currentDate.getTime();
 
+        String exception = null;
         try {
             //执行任务
             runnable.run();
 
-            //执行成功 统计执行情况
-            statistical(true, null, System.currentTimeMillis() - runPreTime);
-
-
         } catch (Exception e) {
 
-            //执行失败 统计执行情况
-            statistical(false, e.getMessage(), System.currentTimeMillis() - runPreTime);
+            exception = e.getMessage();
 
             //进入异常处理逻辑
             exceptionHandler.handle(e, this);
         }
+
+        //执行完成 统计执行情况
+        this.statistical(true, exception, System.currentTimeMillis() - runPreTime);
 
         this.handlePeriod(currentDate);
     }

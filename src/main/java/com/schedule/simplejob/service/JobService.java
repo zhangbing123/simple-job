@@ -5,7 +5,7 @@ import com.schedule.simplejob.curd.BaseService;
 import com.schedule.simplejob.model.entity.Job;
 import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
-import com.schedule.simplejob.timer.TimeRunTask;
+import com.schedule.simplejob.timer.TimeTaskRunner;
 
 public interface JobService extends BaseService<Job, String> {
 
@@ -37,7 +37,7 @@ public interface JobService extends BaseService<Job, String> {
     String registerTaskAndPersist(RegisterTask registerTask);
 
 
-    TimeRunTask registerTaskNotPersist(RegisterTask registerTask);
+    TimeTaskRunner registerTaskNotPersist(RegisterTask registerTask);
 
     /**
      * 持久化的任务  重新启动

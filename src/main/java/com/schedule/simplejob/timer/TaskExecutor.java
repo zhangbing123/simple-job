@@ -22,11 +22,11 @@ public class TaskExecutor extends ThreadPoolExecutor {
         this(20, 60, 0, TimeUnit.MILLISECONDS, new LinkedBlockingDeque<>(100));
     }
 
-    public List<TimeRunTask> runTask(List<TimeRunTask> taskAndRmv) {
+    public List<TimeTaskRunner> runTask(List<TimeTaskRunner> taskAndRmv) {
 
-        List<TimeRunTask> errorTasks = new ArrayList<>(taskAndRmv.size());
+        List<TimeTaskRunner> errorTasks = new ArrayList<>(taskAndRmv.size());
 
-        for (TimeRunTask runnable : taskAndRmv) {
+        for (TimeTaskRunner runnable : taskAndRmv) {
 
             if (runnable.isCancel()) continue;
 

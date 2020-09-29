@@ -1,6 +1,6 @@
 package com.schedule.simplejob.queue;
 
-import com.schedule.simplejob.timer.TimeRunTask;
+import com.schedule.simplejob.timer.TimeTaskRunner;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -12,10 +12,10 @@ import java.util.*;
  **/
 public class TaskQueue {
 
-    private TreeMap<Long, List<TimeRunTask>> taskQueue = new TreeMap();
+    private TreeMap<Long, List<TimeTaskRunner>> taskQueue = new TreeMap();
 
-    public void addQueue(Long time, TimeRunTask runnable) {
-        List<TimeRunTask> runnables = taskQueue.get(time);
+    public void addQueue(Long time, TimeTaskRunner runnable) {
+        List<TimeTaskRunner> runnables = taskQueue.get(time);
         if (runnables != null) {
             runnables.add(runnable);
         } else {
@@ -25,11 +25,11 @@ public class TaskQueue {
         }
     }
 
-    public void addQueues(Long time, List<TimeRunTask> runnables) {
+    public void addQueues(Long time, List<TimeTaskRunner> runnables) {
         if (CollectionUtils.isEmpty(runnables)) {
             return;
         }
-        List<TimeRunTask> oldRunnables = taskQueue.get(time);
+        List<TimeTaskRunner> oldRunnables = taskQueue.get(time);
         if (!CollectionUtils.isEmpty(oldRunnables)) {
             runnables.addAll(runnables);
         } else {
@@ -46,9 +46,9 @@ public class TaskQueue {
 
     }
 
-    public List<TimeRunTask> getTaskAndRmv() {
+    public List<TimeTaskRunner> getTaskAndRmv() {
         long time = getTime();
-        List<TimeRunTask> runnables = taskQueue.get(time);
+        List<TimeTaskRunner> runnables = taskQueue.get(time);
         taskQueue.remove(time);
         return runnables;
     }
@@ -59,11 +59,11 @@ public class TaskQueue {
 
     //取消任务 不在执行任务
     public boolean remove(String taskId) {
-        Set<Map.Entry<Long, List<TimeRunTask>>> entries = taskQueue.entrySet();
-        for (Map.Entry<Long, List<TimeRunTask>> entry : entries) {
-            List<TimeRunTask> timeRunTasks = entry.getValue();
+        Set<Map.Entry<Long, List<TimeTaskRunner>>> entries = taskQueue.entrySet();
+        for (Map.Entry<Long, List<TimeTaskRunner>> entry : entries) {
+            List<TimeTaskRunner> timeRunTasks = entry.getValue();
             if (!CollectionUtils.isEmpty(timeRunTasks)) {
-                for (TimeRunTask timeRunTask : timeRunTasks) {
+                for (TimeTaskRunner timeRunTask : timeRunTasks) {
                     if (timeRunTask.getTaskId().equals(taskId)) {
                         timeRunTask.setCancel(true);
                        return true;

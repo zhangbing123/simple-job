@@ -1,4 +1,4 @@
-package com.schedule.simplejob.zbtest;
+package com.schedule.simplejob.test;
 
 import org.springframework.scheduling.support.CronSequenceGenerator;
 
