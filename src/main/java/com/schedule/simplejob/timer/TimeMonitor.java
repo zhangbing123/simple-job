@@ -72,7 +72,7 @@ public class TimeMonitor {
                     }
                 }
 
-                long time = queue.getTime();
+                long time = queue.getFirstTime();
 
                 if (time < 0) continue;
 

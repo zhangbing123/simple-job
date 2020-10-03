@@ -39,7 +39,7 @@ public class RegisterController {
 
 
     /**
-     * 通过http调用执行任务
+     * 注册以http执行的任务
      *
      * @param registerTask
      * @return 任务id
@@ -52,7 +52,7 @@ public class RegisterController {
     }
 
     /**
-     * 通过bean和method的执行任务
+     * 注册以Spring Bean方式执行的任务
      *
      * @param registerTask
      * @return taskId 任务id
@@ -64,7 +64,7 @@ public class RegisterController {
     }
 
     /**
-     * 停止禁用任务的执行
+     * 禁用任务
      *
      * @param taskInfo
      * @return
@@ -74,10 +74,21 @@ public class RegisterController {
 
         if (StringUtils.isEmpty(taskInfo.getTaskId())) throw new SimpleRunTimeException("the taskId is null");
 
-        simpleJob.stop(taskInfo.getTaskId());
-        jobService.updateByPrimaryKeySelective(Job.builder().id(taskInfo.getTaskId()).status("STOP").build());
+        return Result.ok(jobService.stop(taskInfo.getTaskId()), "禁用成功");
+    }
 
-        return Result.ok(null, "禁用成功");
+    /**
+     * 删除任务
+     *
+     * @param taskId
+     * @return
+     */
+    @PostMapping("/del")
+    public Result delTask(String taskId) {
+
+        if (StringUtils.isEmpty(taskId)) throw new SimpleRunTimeException("the taskId is null");
+
+        return Result.ok(jobService.delTask(taskId), "删除成功");
     }
 
     /**
@@ -101,7 +112,7 @@ public class RegisterController {
     }
 
     /**
-     * 查询任务列表
+     * 查询任务
      *
      * @return
      */
@@ -112,7 +123,7 @@ public class RegisterController {
     }
 
     /**
-     * 查询任务执行情况
+     * 查询执行统计
      *
      * @return
      */

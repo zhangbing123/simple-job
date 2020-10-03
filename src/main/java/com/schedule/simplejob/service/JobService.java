@@ -47,4 +47,18 @@ public interface JobService extends BaseService<Job, String> {
      */
     boolean reRegister(Job job);
 
+    /**
+     * 删除任务
+     * @param taskId
+     * @return
+     */
+    int delTask(String taskId);
+
+    /**
+     * 禁用任务
+     * @param taskId
+     * @return
+     */
+    boolean stop(String taskId);
+
 }

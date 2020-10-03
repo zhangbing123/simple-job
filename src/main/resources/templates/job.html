@@ -335,17 +335,16 @@
             var data = obj.data;
             if (obj.event === 'detail') {
                 layer.msg('ID：' + data.id + ' 的查看操作');
-            } else if (obj.event === 'del') {
+            } else if (obj.event === 'del') {//删除
                 if (data.status == "RUNNING") {
                     layer.alert('请禁用后，在删除')
                 } else {
                     layer.confirm('真的删除行么', function (index) {
-                        obj.del();
-                        layer.close(index);
+                        del(data.id,index);
                     });
                 }
 
-            } else if (obj.event === 'edit') {
+            } else if (obj.event === 'edit') {//编辑
 
                 layer.alert('编辑行：<br>' + JSON.stringify(data))
             }
@@ -414,9 +413,11 @@
                                     layer.msg(json.message)
                                 } else {
                                     layer.msg("操作成功")
+
                                 }
                                 layer.close(index);
-                                table.reload();
+                                //修改成功后刷新父界面
+                                window.parent.location.reload();
                             },
                             error: function (data) {
                                 layer.msg(data.message)
@@ -433,6 +434,33 @@
         });
 
     });
+
+    //删除任务
+    function del(id,index) {
+
+        $.ajax({
+            url: "/register/del?taskId="+id,
+            type: 'POST',
+            dataType: 'text',
+            timeout: 5000,
+            success: function (data) {
+                var json = eval("(" + data + ")");
+                if (json.message !== null) {
+                    layer.msg(json.message)
+                } else {
+                    layer.msg("删除成功")
+
+                }
+                layer.close(index);
+                //修改成功后刷新父界面
+                window.parent.location.reload();
+            },
+            error: function (data) {
+                layer.msg(data.message)
+            }
+        })
+
+    }
 
 
     function Format(datetime, fmt) {

@@ -37,7 +37,7 @@ public class TaskQueue {
         }
     }
 
-    public long getTime() {
+    public long getFirstTime() {
         if (!isEmpty()) {
             return taskQueue.firstKey();
         }
@@ -47,7 +47,7 @@ public class TaskQueue {
     }
 
     public List<TimeRunTask> getTaskAndRmv() {
-        long time = getTime();
+        long time = getFirstTime();
         List<TimeRunTask> runnables = taskQueue.get(time);
         taskQueue.remove(time);
         return runnables;
@@ -75,4 +75,6 @@ public class TaskQueue {
         return false;
 
     }
+
+
 }
