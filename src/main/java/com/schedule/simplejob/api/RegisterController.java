@@ -11,7 +11,6 @@ import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
 import com.schedule.simplejob.result.Result;
 import com.schedule.simplejob.service.ExecuteJobService;
 import com.schedule.simplejob.service.JobService;
-import com.schedule.simplejob.timer.SimpleJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,9 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/register")
 @RestController
 public class RegisterController {
-
-    @Autowired
-    private SimpleJob simpleJob;
 
     @Autowired
     private JobService jobService;
