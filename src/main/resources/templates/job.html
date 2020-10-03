@@ -286,48 +286,35 @@
             var data = $(obj.elem);
             //遍历父级tr，取第一个，然后查找第一个td，取值
             var id = data.parents('tr').first().find('td').eq(0).text();
-            if (obj.elem.checked) {
-                $.ajax({
-                    url: '/register/reStart',
-                    type: 'POST',
-                    dataType: 'text',
-                    contentType: 'application/json',
-                    data: '{"taskId":"' + id + '"}',
-                    timeout: 5000,
-                    success: function (data) {
-                        var json = eval("(" + data + ")");
-                        if (json.message !== null) {
-                            layer.msg(json.message)
-                        } else {
-                            layer.msg("操作成功")
-                        }
 
-                    },
-                    error: function () {
-                        layer.msg("操作失败")
-                    }
-                })
+            var url = "";
+            if (obj.elem.checked) {
+                url = "/register/reStart"
             } else {
-                $.ajax({
-                    url: '/register/stop',
-                    type: 'POST',
-                    dataType: 'text',
-                    contentType: 'application/json',
-                    data: '{"taskId":"' + id + '"}',
-                    timeout: 5000,
-                    success: function (data) {
-                        var json = eval("(" + data + ")");
-                        if (json.message !== null) {
-                            layer.msg(json.message)
-                        } else {
-                            layer.msg("操作成功")
-                        }
-                    },
-                    error: function () {
-                        layer.msg("操作失败")
-                    }
-                })
+                url = "/register/stop"
             }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'text',
+                contentType: 'application/json',
+                data: '{"taskId":"' + id + '"}',
+                timeout: 5000,
+                success: function (data) {
+                    var json = eval("(" + data + ")");
+                    if (json.message !== null) {
+                        layer.msg(json.message)
+                    } else {
+                        layer.msg("操作成功")
+                    }
+                    //修改成功后刷新父界面
+                    window.parent.location.reload();
+
+                },
+                error: function () {
+                    layer.msg("操作失败")
+                }
+            })
         });
 
         //监听查看 编辑 删除 按钮
@@ -340,7 +327,7 @@
                     layer.alert('请禁用后，在删除')
                 } else {
                     layer.confirm('真的删除行么', function (index) {
-                        del(data.id,index);
+                        del(data.id, index);
                     });
                 }
 
@@ -399,7 +386,7 @@
 
                     if (data.name == "") {
                         layer.alert('任务名称不能为空');
-                    }else {
+                    } else {
                         $.ajax({
                             url: url,
                             type: 'POST',
@@ -436,10 +423,10 @@
     });
 
     //删除任务
-    function del(id,index) {
+    function del(id, index) {
 
         $.ajax({
-            url: "/register/del?taskId="+id,
+            url: "/register/del?taskId=" + id,
             type: 'POST',
             dataType: 'text',
             timeout: 5000,
