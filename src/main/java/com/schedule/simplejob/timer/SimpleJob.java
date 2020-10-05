@@ -34,6 +34,8 @@ public class SimpleJob {
      */
     public TimeRunTask register(long time, TimeRunTask runnable) {
 
+        if (!isRunning()) throw new SimpleRunTimeException("timer not started");
+
         if (time < 0) throw new SimpleRunTimeException("the time is null");
 
         runnable.check();
@@ -57,11 +59,15 @@ public class SimpleJob {
      * @param runnable 执行任务
      */
     public TimeRunTask registerAtTime(long time, Runnable runnable) {
-        return registerAtTime(time, runnable, null, false);
+        return registerAtTime(time, runnable, null);
     }
 
-    public TimeRunTask registerAtTime(long time, Runnable runnable, String taskId, boolean isStatistical) {
-        return register(time, new TimeRunTask(this, runnable, -1, taskId, isStatistical));
+    public TimeRunTask registerAtTime(long time, Runnable runnable, TaskExceptionHandler exceptionHandler) {
+        return registerAtTime(time, runnable, null, exceptionHandler, false);
+    }
+
+    public TimeRunTask registerAtTime(long time, Runnable runnable, String taskId, TaskExceptionHandler exceptionHandler, boolean isStatistical) {
+        return register(time, new TimeRunTask(this, runnable, -1, exceptionHandler, taskId, isStatistical));
     }
 
 
