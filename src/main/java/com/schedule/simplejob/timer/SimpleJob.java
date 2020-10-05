@@ -152,6 +152,15 @@ public class SimpleJob {
     }
 
     /**
+     * 定时器是否启动
+     *
+     * @return
+     */
+    public boolean isRunning() {
+        return monitor.isRunning();
+    }
+
+    /**
      * 停止任务
      *
      * @param taskId

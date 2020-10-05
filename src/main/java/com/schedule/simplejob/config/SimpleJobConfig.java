@@ -17,7 +17,9 @@ public class SimpleJobConfig {
     @Bean
     public SimpleJob simpleJob() {
         SimpleJob simpleJob = new SimpleJob();
-        simpleJob.start();
+        if (!simpleJob.isRunning()) {
+            simpleJob.start();
+        }
         return simpleJob;
     }
 

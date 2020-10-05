@@ -1,4 +1,4 @@
-package com.schedule.simplejob.zbtest;
+package com.schedule.simplejob.test;
 
 import com.alibaba.fastjson.JSON;
 import com.schedule.simplejob.timer.SimpleJob;

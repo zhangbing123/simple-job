@@ -96,7 +96,7 @@ public class TimeMonitor {
         return unsafe.compareAndSwapInt(this, stateOffset, 0, 1);
     }
 
-    private boolean isRunning() {
+    public boolean isRunning() {
         if (!(state == 1 && monitorThread.isAlive())) {
             state = 0;
             return false;

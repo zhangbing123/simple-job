@@ -186,7 +186,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
      */
     @Override
     public int delTask(String taskId) {
-        int delete = executeJobService.delete(ExecuteJob.builder().jobId(taskId).build());
+        executeJobService.delete(ExecuteJob.builder().jobId(taskId).build());
         return super.deleteByPrimaryKey(taskId);
     }
 
