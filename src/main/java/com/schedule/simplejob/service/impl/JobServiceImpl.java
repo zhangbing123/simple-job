@@ -6,11 +6,13 @@ import com.schedule.simplejob.curd.BaseMapper;
 import com.schedule.simplejob.curd.BaseServiceImpl;
 import com.schedule.simplejob.exchandler.StopTaskExceptionHandler;
 import com.schedule.simplejob.mapper.JobMapper;
+import com.schedule.simplejob.model.entity.ExecuteJob;
 import com.schedule.simplejob.model.entity.Job;
 import com.schedule.simplejob.model.req.QueryReq;
 import com.schedule.simplejob.model.reqregister.RegisterTask;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForBean;
 import com.schedule.simplejob.model.reqregister.RegisterTaskForHttp;
+import com.schedule.simplejob.service.ExecuteJobService;
 import com.schedule.simplejob.service.JobService;
 import com.schedule.simplejob.timer.SimpleJob;
 import com.schedule.simplejob.timer.TimeTaskRunner;
@@ -38,6 +40,9 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
 
     @Autowired
     private SimpleJob simpleJob;
+
+    @Autowired
+    private ExecuteJobService executeJobService;
 
     @Value("${is.persistence:false}")
     private boolean isPersistence;
@@ -128,7 +133,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
                         new StopTaskExceptionHandler(), registerTask.getTaskId(), registerTask.isStatistical());
 
             } else {
-                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(), registerTask.isStatistical());
+                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(),null, registerTask.isStatistical());
             }
         } else {
             //todo 校验cron表达式格式
@@ -172,6 +177,25 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
         task.setStatistical(true);
         this.registerTaskNotPersist(task);
         return true;
+    }
+
+    /**
+     * 删除任务
+     *
+     * @param taskId
+     * @return
+     */
+    @Override
+    public int delTask(String taskId) {
+        executeJobService.delete(ExecuteJob.builder().jobId(taskId).build());
+        return super.deleteByPrimaryKey(taskId);
+    }
+
+    @Override
+    public boolean stop(String taskId) {
+        simpleJob.stop(taskId);
+        int i = super.updateByPrimaryKeySelective(Job.builder().id(taskId).status("STOP").build());
+        return i == 1;
     }
 
 

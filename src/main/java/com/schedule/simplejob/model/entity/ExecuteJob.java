@@ -28,7 +28,7 @@ public class ExecuteJob {
     private String exception;
 
     @Column(name = "excute_date")
-    private long excuteDate;
+    private Long excuteDate;
 
     @Column(name = "create_time")
     private Date createTime;

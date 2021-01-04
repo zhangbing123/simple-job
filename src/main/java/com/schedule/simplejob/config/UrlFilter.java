@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * yun.shen
- * @author 
+ * @author
  *
  */
 @Log4j2
@@ -22,7 +22,7 @@ public class UrlFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// Do nothing because of X and Y.
 		log.debug("UrlFilter init");
-		
+
 	}
 
 	@Override

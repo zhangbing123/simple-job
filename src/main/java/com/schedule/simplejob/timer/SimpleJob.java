@@ -41,6 +41,8 @@ public class SimpleJob {
      */
     protected TimeTaskRunner register(long time, TimeTaskRunner runnable) {
 
+        if (!isRunning()) throw new SimpleRunTimeException("timer not started");
+
         if (time < 0) throw new SimpleRunTimeException("the time is null");
 
         runnable.check();
@@ -161,12 +163,23 @@ public class SimpleJob {
     }
 
     /**
+     * 定时器是否启动
+     *
+     * @return
+     */
+    public boolean isRunning() {
+        return monitor.isRunning();
+    }
+
+    /**
      * 停止任务
      *
      * @param taskId
      */
     public boolean stop(String taskId) {
-        return queue.remove(taskId);
+        synchronized (queue) {
+            return queue.remove(taskId);
+        }
     }
 
 

@@ -293,48 +293,35 @@
             var data = $(obj.elem);
             //遍历父级tr，取第一个，然后查找第一个td，取值
             var id = data.parents('tr').first().find('td').eq(0).text();
-            if (obj.elem.checked) {
-                $.ajax({
-                    url: '/register/reStart',
-                    type: 'POST',
-                    dataType: 'text',
-                    contentType: 'application/json',
-                    data: '{"taskId":"' + id + '"}',
-                    timeout: 5000,
-                    success: function (data) {
-                        var json = eval("(" + data + ")");
-                        if (json.message !== null) {
-                            layer.msg(json.message)
-                        } else {
-                            layer.msg("操作成功")
-                        }
 
-                    },
-                    error: function () {
-                        layer.msg("操作失败")
-                    }
-                })
+            var url = "";
+            if (obj.elem.checked) {
+                url = "/register/reStart"
             } else {
-                $.ajax({
-                    url: '/register/stop',
-                    type: 'POST',
-                    dataType: 'text',
-                    contentType: 'application/json',
-                    data: '{"taskId":"' + id + '"}',
-                    timeout: 5000,
-                    success: function (data) {
-                        var json = eval("(" + data + ")");
-                        if (json.message !== null) {
-                            layer.msg(json.message)
-                        } else {
-                            layer.msg("操作成功")
-                        }
-                    },
-                    error: function () {
-                        layer.msg("操作失败")
-                    }
-                })
+                url = "/register/stop"
             }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                dataType: 'text',
+                contentType: 'application/json',
+                data: '{"taskId":"' + id + '"}',
+                timeout: 5000,
+                success: function (data) {
+                    var json = eval("(" + data + ")");
+                    if (json.message !== null) {
+                        layer.msg(json.message)
+                    } else {
+                        layer.msg("操作成功")
+                    }
+                    //修改成功后刷新父界面
+                    window.parent.location.reload();
+
+                },
+                error: function () {
+                    layer.msg("操作失败")
+                }
+            })
         });
 
         //监听查看 编辑 删除 按钮
@@ -342,29 +329,16 @@
             var data = obj.data;
             if (obj.event === 'detail') {
                 layer.msg('ID：' + data.id + ' 的查看操作');
-
-                form.val('example', {
-                    "username": "贤心" // "name": "value"
-                    ,"password": "123456"
-                    ,"interest": 1
-                    ,"like[write]": true //复选框选中状态
-                    ,"close": true //开关状态
-                    ,"sex": "女"
-                    ,"desc": "我爱 layui"
-                });
-
-
-            } else if (obj.event === 'del') {
+            } else if (obj.event === 'del') {//删除
                 if (data.status == "RUNNING") {
                     layer.alert('请禁用后，在删除')
                 } else {
                     layer.confirm('真的删除行么', function (index) {
-                        obj.del();
-                        layer.close(index);
+                        del(data.id, index);
                     });
                 }
 
-            } else if (obj.event === 'edit') {
+            } else if (obj.event === 'edit') {//编辑
 
                 layer.alert('编辑行：<br>' + JSON.stringify(data))
             }
@@ -401,46 +375,50 @@
                 type: 1,
                 title: "信息更新",
                 area: ['600px', '800px'],
-                content: $("#addTaskForm")//引用的弹出层的页面层的方式加载修改界面表单
-            });
-        });
-
-        //新增任务提交
-        form.on('submit(addTask)', function (data) {
-            //表单取值
-            if (data.period == "true") {
-                data.time = data.afterTime;
-            } else if (data.period == "false") {
-                data.time = new Date(data.time).getTime();
-            }
-            var url = "/register/beanTask"
-            if (data.field.type == "HTTP") {
-                url = "/register/httpTask"
-            }
-            var resultCode = '0';
-            $.ajax({
-                url: url,
-                type: 'POST',
-                dataType: 'text',
-                async: false,
-                contentType: 'application/json',
-                data: JSON.stringify(data.field),
-                timeout: 5000,
-                success: function (data) {
-
-                    var json = eval("(" + data + ")");
-                    resultCode = json.code;
-                    if (json.message !== null) {
-                        layer.msg(json.message)
-                    } else {
-                        layer.msg("操作成功")
+                content: $("#addTaskForm"),//引用的弹出层的页面层的方式加载修改界面表单
+                btn: ['确认', '取消'],
+                yes: function (index, layero) {
+                    //表单取值
+                    var data = form.val('addTaskForm');
+                    if (data.period == "true") {
+                        data.time = data.afterTime;
+                    } else if (data.period == "false") {
+                        data.time = new Date(data.time).getTime();
                     }
-                },
-                error: function (data) {
-                    layer.msg(data.message)
-                    resultCode = '01';
-                }
-            });
+
+                    var url = "/register/beanTask"
+                    if (data.type == "HTTP") {
+                        url = "/register/httpTask"
+                    }
+
+                    if (data.name == "") {
+                        layer.alert('任务名称不能为空');
+                    } else {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            dataType: 'text',
+                            contentType: 'application/json',
+                            data: JSON.stringify(data),
+                            timeout: 5000,
+                            success: function (data) {
+                                var json = eval("(" + data + ")");
+                                if (json.message !== null) {
+                                    layer.msg(json.message)
+                                } else {
+                                    layer.msg("操作成功")
+
+                                }
+                                layer.close(index);
+                                //修改成功后刷新父界面
+                                window.parent.location.reload();
+                            },
+                            error: function (data) {
+                                layer.msg(data.message)
+                            }
+                        })
+                    }
+
 
             if (resultCode == "0") {
                 return true;
@@ -450,6 +428,33 @@
         });
 
     });
+
+    //删除任务
+    function del(id, index) {
+
+        $.ajax({
+            url: "/register/del?taskId=" + id,
+            type: 'POST',
+            dataType: 'text',
+            timeout: 5000,
+            success: function (data) {
+                var json = eval("(" + data + ")");
+                if (json.message !== null) {
+                    layer.msg(json.message)
+                } else {
+                    layer.msg("删除成功")
+
+                }
+                layer.close(index);
+                //修改成功后刷新父界面
+                window.parent.location.reload();
+            },
+            error: function (data) {
+                layer.msg(data.message)
+            }
+        })
+
+    }
 
 
     function Format(datetime, fmt) {

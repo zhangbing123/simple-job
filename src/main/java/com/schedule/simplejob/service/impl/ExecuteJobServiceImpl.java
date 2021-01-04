@@ -52,9 +52,10 @@ public class ExecuteJobServiceImpl extends BaseServiceImpl<ExecuteJob, Long> imp
 
         for (ExecuteJobDTO executeJob : executeJobs) {
 
-            Job job = jobHashMap.get(executeJob.getJobId());
-            if (job == null) {
-                job = jobService.selectByPrimaryKey(executeJob.getJobId());
+            Job job = jobHashMap.containsKey(executeJob.getJobId()) ? jobHashMap.get(executeJob.getJobId())
+                    : jobService.selectByPrimaryKey(executeJob.getJobId());
+
+            if (job != null) {
                 jobHashMap.put(job.getId(), job);
             }
             executeJob.setName(job != null ? job.getName() : null);
