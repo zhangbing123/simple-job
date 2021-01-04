@@ -1,9 +1,11 @@
 package com.schedule.simplejob.config;
 
+import com.schedule.simplejob.InitApplicationRunner;
 import com.schedule.simplejob.timer.SimpleJob;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @description:
@@ -11,14 +13,15 @@ import org.springframework.stereotype.Component;
  * @create: 2020-09-01 15:31
  **/
 @Slf4j
-@Component
+@Configuration
 public class SimpleJobConfig {
+
+    @Autowired
+    private InitApplicationRunner runner;
 
     @Bean
     public SimpleJob simpleJob() {
-        SimpleJob simpleJob = new SimpleJob();
-        simpleJob.start();
-        return simpleJob;
+        return new SimpleJob();
     }
 
 

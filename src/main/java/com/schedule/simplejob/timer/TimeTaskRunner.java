@@ -26,6 +26,7 @@ public class TimeTaskRunner implements Runnable {
     private CronSequenceGenerator cronSequenceGenerator;//cron表达式解析器
 
     /**
+     * >0 表示周期任务
      * -1表示不是周期任务 一次性任务
      * -2表示是通过cron表达式执行的任务
      */
@@ -101,21 +102,21 @@ public class TimeTaskRunner implements Runnable {
         Date currentDate = new Date();
         long runPreTime = currentDate.getTime();
 
-        String exception = null;
+        Exception exception = null;
         try {
             //执行任务
             runnable.run();
-
         } catch (Exception e) {
-
-            exception = e.getMessage();
-
-            //进入异常处理逻辑
-            exceptionHandler.handle(e, this);
+            exception = e;
         }
 
         //执行完成 统计执行情况
-        this.statistical(true, exception, System.currentTimeMillis() - runPreTime);
+        this.statistical(true, exception == null ? null : exception.getMessage(), System.currentTimeMillis() - runPreTime);
+
+        if (exception != null) {
+            //进入异常处理逻辑
+            exceptionHandler.handle(exception, this);
+        }
 
         this.handlePeriod(currentDate);
     }
@@ -135,16 +136,15 @@ public class TimeTaskRunner implements Runnable {
     }
 
     //处理周期任务
-    private void handlePeriod(Date currentDate) {
+    protected void handlePeriod(Date currentDate) {
 
         long startTime = currentDate.getTime();//任务执行前的时间
 
         long nextTime = 0L;
         if (period >= 0) {//周期任务
             if (isDelay) {
-                //任务执行完成后的当前时间 + 任务循环周期
+                //任务执行完成后的时间 + 任务循环周期
                 nextTime = System.currentTimeMillis() + period;
-
             } else {
                 nextTime = startTime + period;
             }

@@ -20,7 +20,14 @@ public class SimpleJob {
 
     private TimeMonitor monitor;
 
+    private String role;
+
     public SimpleJob() {
+        this(null);
+    }
+
+    public SimpleJob(String role) {
+        this.role = role;
         this.queue = new TaskQueue();
         monitor = new TimeMonitor(queue);
     }
@@ -32,7 +39,7 @@ public class SimpleJob {
      * @param runnable 执行任务
      * @return TimeRunTask  任务
      */
-    public TimeTaskRunner register(long time, TimeTaskRunner runnable) {
+    protected TimeTaskRunner register(long time, TimeTaskRunner runnable) {
 
         if (time < 0) throw new SimpleRunTimeException("the time is null");
 
@@ -147,8 +154,10 @@ public class SimpleJob {
      * 启动定时器
      */
     public void start() {
-        //启动时间监视器
-        monitor.startRunning();
+        if (isMaster()) {
+            //启动时间监视器
+            monitor.startRunning();
+        }
     }
 
     /**
@@ -161,4 +170,11 @@ public class SimpleJob {
     }
 
 
+    public boolean isMaster() {
+        return role != null && role.equals("MASTER");
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

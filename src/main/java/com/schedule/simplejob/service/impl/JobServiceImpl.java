@@ -131,7 +131,8 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
                 timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(), registerTask.isStatistical());
             }
         } else {
-            // 基于cron表达式的周期任务
+            //todo 校验cron表达式格式
+            //基于cron表达式的周期任务
             timeRunTask = simpleJob.registerByCron(registerTask.getCron(), task, null, registerTask.getTaskId(), registerTask.isStatistical());
         }
         return timeRunTask;

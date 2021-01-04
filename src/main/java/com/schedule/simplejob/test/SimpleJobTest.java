@@ -16,9 +16,9 @@ public class SimpleJobTest {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Date date = DateUtil.parseDate("2020-09-01 15:15:00");
+        Date date = DateUtil.parseDate("2021-01-04 16:04:00");
         simpleJob.start();
-        simpleJob.registerAtTime(date.getTime(), new RunTask("线程0"));
+        simpleJob.registerAtTime(date.getTime(), new RunTask("线程0"),"123",true);
 //        simpleJob.registerAtFixedRate(1000, 2000, new RunTask("线程1"));
 //        simpleJob.registerWithFixedDelay(1000, 2000, new RunTask("线程2"));
 
@@ -77,7 +77,7 @@ public class SimpleJobTest {
             } catch (InterruptedException e) {
 
             }
-            System.out.println(1 / 0);
+//            System.out.println(1 / 0);
             System.out.println(threadName + "任务执行结束....");
 //            System.out.println(threadName + "到时间了，触发事件...");
         }

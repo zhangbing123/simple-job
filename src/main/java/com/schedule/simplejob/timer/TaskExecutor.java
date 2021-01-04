@@ -1,6 +1,7 @@
 package com.schedule.simplejob.timer;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -33,7 +34,7 @@ public class TaskExecutor extends ThreadPoolExecutor {
             try {
                 execute(runnable);
             } catch (Exception e) {
-                //记录到未执行的任务里面
+                //执行失败的任务
                 errorTasks.add(runnable);
             }
         }

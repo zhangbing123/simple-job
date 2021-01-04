@@ -5,6 +5,8 @@ import com.schedule.simplejob.utils.UnsafeInstance;
 import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
 
+import java.util.List;
+
 /**
  * @description: 时间监视器
  * @author: zhangbing
@@ -74,10 +76,9 @@ public class TimeMonitor {
 
                 long time = queue.getTime();
 
-                if (time < 0) continue;
-
                 long currentTimeMillis = System.currentTimeMillis();
-                if (currentTimeMillis >= time) {
+                if (time < 0 || currentTimeMillis >= time) {
+                    //执行任务  执行失败重新入队
                     queue.addQueues(time, executor.runTask(queue.getTaskAndRmv()));
                 } else {
                     //未到触发时间  线程等待
