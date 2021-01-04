@@ -74,7 +74,7 @@ public class TimeMonitor {
                     }
                 }
 
-                long time = queue.getFirstTime();
+                long time = queue.getTime();
 
                 long currentTimeMillis = System.currentTimeMillis();
                 if (time < 0 || currentTimeMillis >= time) {

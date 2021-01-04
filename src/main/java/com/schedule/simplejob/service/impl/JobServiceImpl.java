@@ -133,7 +133,7 @@ public class JobServiceImpl extends BaseServiceImpl<Job, String> implements JobS
                         new StopTaskExceptionHandler(), registerTask.getTaskId(), registerTask.isStatistical());
 
             } else {
-                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(),null, registerTask.isStatistical());
+                timeRunTask = simpleJob.registerAtTime(registerTask.getTime(), task, registerTask.getTaskId(), registerTask.isStatistical());
             }
         } else {
             //todo 校验cron表达式格式
